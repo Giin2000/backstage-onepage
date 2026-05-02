@@ -194,6 +194,7 @@
     /* ── INPUTS ── */
     input[type="text"],
     input[type="email"],
+    select,
     textarea {
       width: 100%;
       background: var(--fondo);
@@ -208,6 +209,7 @@
 
     input[type="text"]:focus,
     input[type="email"]:focus,
+    select:focus,
     textarea:focus {
       border-color: var(--accent);
       box-shadow: 0 0 0 2px var(--glow);
@@ -215,6 +217,21 @@
 
     input::placeholder,
     textarea::placeholder { color: #555; font-size: 0.85rem; }
+
+    select {
+      appearance: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23666' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      padding-right: 2.2rem;
+    }
+    select option { background: #1a1a1a; color: var(--texto); }
+
+    .ciudad-campo { overflow: hidden; transition: opacity 0.25s ease, max-height 0.3s ease; }
+    .ciudad-campo.visible { opacity: 1; max-height: 56px; }
+    .ciudad-campo.oculto  { opacity: 0; max-height: 0; pointer-events: none; }
 
     textarea { resize: none; rows: 3; min-height: 72px; max-height: 72px; }
 
@@ -398,7 +415,7 @@
         </div>
       </div>
 
-      <!-- Fila 2: teléfono + ciudad -->
+      <!-- Fila 2: teléfono + origen -->
       <div class="form-row">
         <div class="form-group">
           <label for="id_telefono">Teléfono</label>
@@ -406,10 +423,23 @@
           <ul class="error-list" id="err_telefono"></ul>
         </div>
         <div class="form-group">
-          <label for="id_ciudad">Ciudad</label>
-          {{ form.ciudad }}
-          <ul class="error-list" id="err_ciudad"></ul>
+          <label for="id_origen">Origen</label>
+          {{ form.origen }}
+          <ul class="error-list" id="err_origen"></ul>
         </div>
+      </div>
+
+      <!-- Ciudad dinámica -->
+      <div class="form-group">
+        <label id="label_ciudad">Departamento</label>
+        <div id="ciudad_nacional_wrap" class="ciudad-campo visible">
+          {{ form.ciudad_nacional }}
+        </div>
+        <div id="ciudad_internacional_wrap" class="ciudad-campo oculto">
+          {{ form.ciudad_internacional }}
+        </div>
+        <ul class="error-list" id="err_ciudad_nacional"></ul>
+        <ul class="error-list" id="err_ciudad_internacional"></ul>
       </div>
 
       <!-- Géneros: pills toggle -->
@@ -488,13 +518,33 @@
     el.style.animationDelay = `${0.12 + i * 0.1}s`;
   });
 
+  /* ── CIUDAD DINÁMICA ── */
+  (function () {
+    const origenSel = document.getElementById('id_origen');
+    const nacWrap   = document.getElementById('ciudad_nacional_wrap');
+    const intWrap   = document.getElementById('ciudad_internacional_wrap');
+    const lbl       = document.getElementById('label_ciudad');
+
+    function toggleCiudad() {
+      const isNac = origenSel.value !== 'internacional';
+      lbl.textContent = isNac ? 'Departamento' : 'País / Ciudad';
+      nacWrap.classList.toggle('visible', isNac);
+      nacWrap.classList.toggle('oculto',  !isNac);
+      intWrap.classList.toggle('visible', !isNac);
+      intWrap.classList.toggle('oculto',  isNac);
+    }
+
+    origenSel.addEventListener('change', toggleCiudad);
+    toggleCiudad();
+  })();
+
   /* ── PLACEHOLDERS ── */
   const ph = {
-    id_nombre:    'Tu nombre completo',
-    id_email:     'tucorreo@gmail.com',
-    id_telefono:  '+51 999 000 000',
-    id_ciudad:    'Lima, Huancayo...',
-    id_comentario: '¿Algo que quieras contarnos?',
+    id_nombre:               'Tu nombre completo',
+    id_email:                'tucorreo@gmail.com',
+    id_telefono:             '+51 999 000 000',
+    id_ciudad_internacional: 'Ej: Buenos Aires, Argentina',
+    id_comentario:           '¿Algo que quieras contarnos?',
   };
   Object.entries(ph).forEach(([id, text]) => {
     const el = document.getElementById(id);
@@ -505,7 +555,7 @@
   const form       = document.getElementById('registroForm');
   const btn        = document.getElementById('btnRegistrar');
   const successMsg = document.getElementById('successMsg');
-  const errFields  = ['nombre', 'email', 'telefono', 'ciudad', 'generos', 'comentario'];
+  const errFields  = ['nombre', 'email', 'telefono', 'origen', 'ciudad_nacional', 'ciudad_internacional', 'generos', 'comentario'];
 
   function clearErrors() {
     errFields.forEach(f => {

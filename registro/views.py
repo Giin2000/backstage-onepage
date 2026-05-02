@@ -23,6 +23,7 @@ def registro_evento(request, slug):
             registro = form.save(commit=False)
             registro.evento = evento
             registro.generos = ', '.join(form.cleaned_data['generos'])
+            registro.ciudad = form.cleaned_data.get('ciudad', '')
             registro.save()
             return JsonResponse({'success': True})
         return JsonResponse({'success': False, 'errors': form.errors})
