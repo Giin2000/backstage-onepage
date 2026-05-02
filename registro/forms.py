@@ -2,63 +2,65 @@ from django import forms
 from .models import Registro
 
 GENEROS_CHOICES = [
-    ('Rock', 'Rock'),
-    ('Jazz', 'Jazz'),
-    ('Electronica', 'Electrónica'),
+    ('Techno', 'Techno'),
+    ('House', 'House'),
+    ('EDM', 'EDM'),
+    ('Reggaetón', 'Reggaetón'),
     ('Hip Hop', 'Hip Hop'),
-    ('Pop', 'Pop'),
-    ('Indie', 'Indie'),
-    ('Urbano', 'Urbano'),
+    ('Latin', 'Latin'),
     ('Otro', 'Otro'),
 ]
 
-ORIGEN_CHOICES = [
-    ('', '— Selecciona tu origen —'),
-    ('nacional', 'Nacional - Perú'),
-    ('internacional', 'Internacional'),
+EXPERIENCIA_CHOICES = [
+    ('Solo asistir a eventos', 'Solo asistir a eventos'),
+    ('Conocer artistas', 'Conocer artistas'),
+    ('Hacer networking', 'Hacer networking'),
+    ('Trabajar en eventos', 'Trabajar en eventos'),
+    ('Colaborar con la productora', 'Colaborar con la productora'),
 ]
 
-DEPARTAMENTOS_CHOICES = [
-    ('', '— Selecciona un departamento —'),
-    ('Lima', 'Lima'),
-    ('Arequipa', 'Arequipa'),
-    ('Cusco', 'Cusco'),
-    ('Junín', 'Junín'),
-    ('La Libertad', 'La Libertad'),
-    ('Piura', 'Piura'),
-    ('Lambayeque', 'Lambayeque'),
-    ('Áncash', 'Áncash'),
-    ('Loreto', 'Loreto'),
-    ('Puno', 'Puno'),
-    ('Cajamarca', 'Cajamarca'),
-    ('Ica', 'Ica'),
-    ('San Martín', 'San Martín'),
-    ('Huánuco', 'Huánuco'),
-    ('Ucayali', 'Ucayali'),
-    ('Ayacucho', 'Ayacucho'),
-    ('Apurímac', 'Apurímac'),
-    ('Moquegua', 'Moquegua'),
-    ('Tacna', 'Tacna'),
-    ('Tumbes', 'Tumbes'),
-    ('Pasco', 'Pasco'),
-    ('Madre de Dios', 'Madre de Dios'),
-    ('Amazonas', 'Amazonas'),
-    ('Huancavelica', 'Huancavelica'),
+CIUDAD_CHOICES = [
+    ('', '— Selecciona tu ciudad —'),
+    ('Ciudades frecuentes', [
+        ('Huancayo', 'Huancayo'),
+        ('Lima', 'Lima'),
+        ('Oxapampa', 'Oxapampa'),
+    ]),
+    ('Otros departamentos', [
+        ('Amazonas', 'Amazonas'),
+        ('Áncash', 'Áncash'),
+        ('Apurímac', 'Apurímac'),
+        ('Arequipa', 'Arequipa'),
+        ('Ayacucho', 'Ayacucho'),
+        ('Cajamarca', 'Cajamarca'),
+        ('Cusco', 'Cusco'),
+        ('Huancavelica', 'Huancavelica'),
+        ('Ica', 'Ica'),
+        ('Junín', 'Junín'),
+        ('La Libertad', 'La Libertad'),
+        ('Lambayeque', 'Lambayeque'),
+        ('Loreto', 'Loreto'),
+        ('Madre de Dios', 'Madre de Dios'),
+        ('Moquegua', 'Moquegua'),
+        ('Pasco', 'Pasco'),
+        ('Piura', 'Piura'),
+        ('Puno', 'Puno'),
+        ('San Martín', 'San Martín'),
+        ('Tacna', 'Tacna'),
+        ('Tumbes', 'Tumbes'),
+        ('Ucayali', 'Ucayali'),
+    ]),
+    ('otra', '+ Otra ciudad'),
 ]
 
 
 class RegistroForm(forms.ModelForm):
-    origen = forms.ChoiceField(
-        choices=ORIGEN_CHOICES,
-        label='Origen',
+    ciudad = forms.ChoiceField(
+        choices=CIUDAD_CHOICES,
+        label='Ciudad',
     )
-    ciudad_nacional = forms.ChoiceField(
-        choices=DEPARTAMENTOS_CHOICES,
-        label='Departamento',
-        required=False,
-    )
-    ciudad_internacional = forms.CharField(
-        label='País / Ciudad',
+    ciudad_otra = forms.CharField(
+        label='¿Cuál ciudad?',
         required=False,
         max_length=80,
     )
@@ -67,24 +69,28 @@ class RegistroForm(forms.ModelForm):
         widget=forms.CheckboxSelectMultiple,
         label='Géneros musicales',
     )
+    subgeneros = forms.CharField(
+        required=False,
+        widget=forms.HiddenInput,
+    )
+    experiencia = forms.MultipleChoiceField(
+        choices=EXPERIENCIA_CHOICES,
+        widget=forms.CheckboxSelectMultiple,
+        label='Experiencia / Interés',
+        required=False,
+    )
 
     class Meta:
         model = Registro
-        exclude = ('evento', 'fecha_registro', 'ciudad')
+        exclude = ('evento', 'fecha_registro', 'ciudad', 'experiencia')
 
     def clean(self):
         cleaned = super().clean()
-        origen = cleaned.get('origen')
-        if origen == 'nacional':
-            dep = cleaned.get('ciudad_nacional', '').strip()
-            if not dep:
-                self.add_error('ciudad_nacional', 'Selecciona un departamento.')
+        ciudad = cleaned.get('ciudad', '')
+        if ciudad == 'otra':
+            otra = cleaned.get('ciudad_otra', '').strip()
+            if not otra:
+                self.add_error('ciudad_otra', 'Escribe tu ciudad.')
             else:
-                cleaned['ciudad'] = f'Nacional - {dep}'
-        elif origen == 'internacional':
-            ciudad_int = cleaned.get('ciudad_internacional', '').strip()
-            if not ciudad_int:
-                self.add_error('ciudad_internacional', 'Escribe tu país/ciudad.')
-            else:
-                cleaned['ciudad'] = f'Internacional - {ciudad_int}'
+                cleaned['ciudad'] = otra
         return cleaned

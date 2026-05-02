@@ -21,6 +21,7 @@ class Registro(models.Model):
     telefono = models.CharField(max_length=20)
     ciudad = models.CharField(max_length=100)
     generos = models.TextField()
+    experiencia = models.TextField(blank=True)
     comentario = models.TextField(blank=True)
     fecha_registro = models.DateTimeField(auto_now_add=True)
 

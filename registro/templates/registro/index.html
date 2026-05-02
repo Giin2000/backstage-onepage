@@ -170,7 +170,7 @@
       animation: slideUp 0.4s ease both;
     }
 
-    /* form-groups sueltos (géneros, comentario) */
+    /* form-groups sueltos */
     #registroForm > .form-group {
       opacity: 0;
       animation: slideUp 0.4s ease both;
@@ -228,9 +228,11 @@
       padding-right: 2.2rem;
     }
     select option { background: #1a1a1a; color: var(--texto); }
+    select optgroup { color: #666; font-weight: 700; font-style: normal; }
 
+    /* ── OTRA CIUDAD (toggle) ── */
     .ciudad-campo { overflow: hidden; transition: opacity 0.25s ease, max-height 0.3s ease; }
-    .ciudad-campo.visible { opacity: 1; max-height: 56px; }
+    .ciudad-campo.visible { opacity: 1; max-height: 72px; }
     .ciudad-campo.oculto  { opacity: 0; max-height: 0; pointer-events: none; }
 
     textarea { resize: none; rows: 3; min-height: 72px; max-height: 72px; }
@@ -270,6 +272,14 @@
       font-weight: 700;
     }
 
+    /* Subgéneros: checked state más sutil */
+    .pill-wrap input[type="checkbox"]:checked + label.pill.sub-pill {
+      background: rgba(255, 107, 0, 0.15);
+      color: var(--accent);
+      border-color: var(--accent);
+      font-weight: 600;
+    }
+
     label.pill {
       display: inline-block;
       padding: 0.38rem 0.95rem;
@@ -289,6 +299,31 @@
     label.pill:hover {
       border-color: var(--accent);
       background: rgba(255, 255, 255, 0.04);
+    }
+
+    label.pill.sub-pill {
+      font-size: 0.78rem;
+      padding: 0.3rem 0.8rem;
+      background: #111;
+      border-color: #2a2a2a;
+    }
+
+    /* ── SUBGÉNEROS SECTION ── */
+    .subgeneros-section {
+      margin-top: 0.65rem;
+      padding-top: 0.55rem;
+      border-top: 1px solid #252525;
+      display: none;
+    }
+
+    .subgeneros-label {
+      display: block;
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #666;
+      margin-bottom: 0.45rem;
     }
 
     /* ── BOTÓN ── */
@@ -415,7 +450,7 @@
         </div>
       </div>
 
-      <!-- Fila 2: teléfono + origen -->
+      <!-- Fila 2: teléfono + ciudad -->
       <div class="form-row">
         <div class="form-group">
           <label for="id_telefono">Teléfono</label>
@@ -423,29 +458,23 @@
           <ul class="error-list" id="err_telefono"></ul>
         </div>
         <div class="form-group">
-          <label for="id_origen">Origen</label>
-          {{ form.origen }}
-          <ul class="error-list" id="err_origen"></ul>
+          <label for="id_ciudad">Ciudad</label>
+          {{ form.ciudad }}
+          <ul class="error-list" id="err_ciudad"></ul>
         </div>
       </div>
 
-      <!-- Ciudad dinámica -->
-      <div class="form-group">
-        <label id="label_ciudad">Departamento</label>
-        <div id="ciudad_nacional_wrap" class="ciudad-campo visible">
-          {{ form.ciudad_nacional }}
-        </div>
-        <div id="ciudad_internacional_wrap" class="ciudad-campo oculto">
-          {{ form.ciudad_internacional }}
-        </div>
-        <ul class="error-list" id="err_ciudad_nacional"></ul>
-        <ul class="error-list" id="err_ciudad_internacional"></ul>
+      <!-- Otra ciudad (condicional) -->
+      <div class="form-group ciudad-campo oculto" id="otra-ciudad-wrap">
+        <label for="id_ciudad_otra">¿Cuál ciudad?</label>
+        {{ form.ciudad_otra }}
+        <ul class="error-list" id="err_ciudad_otra"></ul>
       </div>
 
       <!-- Géneros: pills toggle -->
       <div class="form-group">
         <span class="pills-label">Géneros musicales favoritos</span>
-        <div class="pills-container">
+        <div class="pills-container" id="generos-container">
           {% for choice in form.generos %}
             <div class="pill-wrap">
               {{ choice.tag }}
@@ -453,7 +482,32 @@
             </div>
           {% endfor %}
         </div>
+
+        <!-- Subgéneros dinámicos -->
+        <div class="subgeneros-section" id="subgeneros-section">
+          <span class="subgeneros-label">Subgénero</span>
+          <div class="pills-container" id="subgeneros-container"></div>
+        </div>
+
+        {{ form.subgeneros }}
         <ul class="error-list" id="err_generos"></ul>
+      </div>
+
+      <!-- Experiencia / Interés -->
+      <div class="form-group">
+        <span class="pills-label">
+          Experiencia / Interés
+          <span style="color:#555;font-weight:400;text-transform:none;letter-spacing:0"> (opcional)</span>
+        </span>
+        <div class="pills-container">
+          {% for choice in form.experiencia %}
+            <div class="pill-wrap">
+              {{ choice.tag }}
+              <label for="{{ choice.id_for_label }}" class="pill">{{ choice.choice_label }}</label>
+            </div>
+          {% endfor %}
+        </div>
+        <ul class="error-list" id="err_experiencia"></ul>
       </div>
 
       <!-- Comentario -->
@@ -518,33 +572,91 @@
     el.style.animationDelay = `${0.12 + i * 0.1}s`;
   });
 
-  /* ── CIUDAD DINÁMICA ── */
+  /* ── OTRA CIUDAD ── */
   (function () {
-    const origenSel = document.getElementById('id_origen');
-    const nacWrap   = document.getElementById('ciudad_nacional_wrap');
-    const intWrap   = document.getElementById('ciudad_internacional_wrap');
-    const lbl       = document.getElementById('label_ciudad');
+    const ciudadSel = document.getElementById('id_ciudad');
+    const otraWrap  = document.getElementById('otra-ciudad-wrap');
 
-    function toggleCiudad() {
-      const isNac = origenSel.value !== 'internacional';
-      lbl.textContent = isNac ? 'Departamento' : 'País / Ciudad';
-      nacWrap.classList.toggle('visible', isNac);
-      nacWrap.classList.toggle('oculto',  !isNac);
-      intWrap.classList.toggle('visible', !isNac);
-      intWrap.classList.toggle('oculto',  isNac);
+    function toggleOtra() {
+      const isOtra = ciudadSel.value === 'otra';
+      otraWrap.classList.toggle('visible', isOtra);
+      otraWrap.classList.toggle('oculto',  !isOtra);
     }
 
-    origenSel.addEventListener('change', toggleCiudad);
-    toggleCiudad();
+    ciudadSel.addEventListener('change', toggleOtra);
+    toggleOtra();
   })();
+
+  /* ── SUBGÉNEROS ── */
+  const subgenerosPorGenero = {
+    'Techno':    ['Melodic Techno', 'Hard Techno', 'Peak Time', 'Industrial'],
+    'House':     ['Deep House', 'Tech House', 'Afro House', 'Minimal'],
+    'EDM':       ['Trance', 'Dubstep', 'Drum & Bass', 'Future Bass'],
+    'Reggaetón': ['Romántico', 'Perreo', 'Trap Latino'],
+    'Hip Hop':   ['Old School', 'Trap', 'R&B', 'Conscious'],
+    'Latin':     ['Salsa', 'Cumbia', 'Bachata', 'Merengue'],
+    'Otro':      [],
+  };
+
+  const selectedSubgeneros = new Set();
+
+  function renderSubgeneros() {
+    const checkedGenres = [...document.querySelectorAll('#generos-container input[type=checkbox]:checked')]
+      .map(cb => cb.value);
+
+    const available = [];
+    checkedGenres.forEach(g => {
+      (subgenerosPorGenero[g] || []).forEach(s => {
+        if (!available.includes(s)) available.push(s);
+      });
+    });
+
+    [...selectedSubgeneros].forEach(s => {
+      if (!available.includes(s)) selectedSubgeneros.delete(s);
+    });
+
+    const container = document.getElementById('subgeneros-container');
+    const section   = document.getElementById('subgeneros-section');
+
+    if (available.length === 0) {
+      section.style.display = 'none';
+      container.innerHTML = '';
+    } else {
+      section.style.display = 'block';
+      container.innerHTML = available.map(s => {
+        const id = 'sub_' + s.replace(/[\s&/]+/g, '_');
+        return `<div class="pill-wrap">
+          <input type="checkbox" id="${id}" class="subgenero-cb" value="${s}"${selectedSubgeneros.has(s) ? ' checked' : ''}>
+          <label for="${id}" class="pill sub-pill">${s}</label>
+        </div>`;
+      }).join('');
+
+      container.querySelectorAll('.subgenero-cb').forEach(cb => {
+        cb.addEventListener('change', () => {
+          if (cb.checked) selectedSubgeneros.add(cb.value);
+          else selectedSubgeneros.delete(cb.value);
+          syncSubgenerosField();
+        });
+      });
+    }
+    syncSubgenerosField();
+  }
+
+  function syncSubgenerosField() {
+    document.getElementById('id_subgeneros').value = [...selectedSubgeneros].join(', ');
+  }
+
+  document.querySelectorAll('#generos-container input[type=checkbox]').forEach(cb => {
+    cb.addEventListener('change', renderSubgeneros);
+  });
 
   /* ── PLACEHOLDERS ── */
   const ph = {
-    id_nombre:               'Tu nombre completo',
-    id_email:                'tucorreo@gmail.com',
-    id_telefono:             '+51 999 000 000',
-    id_ciudad_internacional: 'Ej: Buenos Aires, Argentina',
-    id_comentario:           '¿Algo que quieras contarnos?',
+    id_nombre:      'Tu nombre completo',
+    id_email:       'tucorreo@gmail.com',
+    id_telefono:    '+51 999 000 000',
+    id_ciudad_otra: 'Ej: Buenos Aires, Bogotá...',
+    id_comentario:  '¿Algo que quieras contarnos?',
   };
   Object.entries(ph).forEach(([id, text]) => {
     const el = document.getElementById(id);
@@ -555,7 +667,7 @@
   const form       = document.getElementById('registroForm');
   const btn        = document.getElementById('btnRegistrar');
   const successMsg = document.getElementById('successMsg');
-  const errFields  = ['nombre', 'email', 'telefono', 'origen', 'ciudad_nacional', 'ciudad_internacional', 'generos', 'comentario'];
+  const errFields  = ['nombre', 'email', 'telefono', 'ciudad', 'ciudad_otra', 'generos', 'experiencia', 'comentario'];
 
   function clearErrors() {
     errFields.forEach(f => {
