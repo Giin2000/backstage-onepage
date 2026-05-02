@@ -14,6 +14,12 @@ class Command(BaseCommand):
         else:
             self.stdout.write('Superusuario admin ya existe')
 
+        if not User.objects.filter(username='angello').exists():
+            User.objects.create_superuser('angello', 'angello@backstage.com', 'Backstage2026')
+            self.stdout.write(self.style.SUCCESS('Superusuario angello creado'))
+        else:
+            self.stdout.write('Superusuario angello ya existe')
+
         if not Evento.objects.filter(slug='stage-lab').exists():
             Evento.objects.create(
                 nombre='Stage Lab · Laboratorio de Escena',
