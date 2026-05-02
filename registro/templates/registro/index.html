@@ -8,12 +8,14 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --naranja: #FF6B00;
-      --cyan: #00E5FF;
-      --fondo: #0a0a0a;
-      --card: #1a1a1a;
-      --borde: #333;
-      --texto: #e0e0e0;
+      --accent:       #FF6B00;
+      --accent-hover: #e05e00;
+      --fondo:        #0a0a0a;
+      --card:         #1a1a1a;
+      --borde:        #333;
+      --texto:        #e0e0e0;
+      --btn-text:     #fff;
+      --glow:         rgba(255, 107, 0, 0.35);
     }
 
     body {
@@ -21,19 +23,34 @@
       color: var(--texto);
       font-family: 'Segoe UI', system-ui, sans-serif;
       min-height: 100vh;
+      transition: background 0.7s ease;
+    }
+
+    /* ── ANIMACIONES ── */
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulseBtn {
+      0%, 70%, 100% { box-shadow: 0 0 0 0 var(--glow); }
+      85%            { box-shadow: 0 0 0 10px transparent; }
     }
 
     /* ── HEADER ── */
     .header {
       position: relative;
       width: 100%;
-      min-height: 60vh;
+      min-height: 50vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: flex-end;
       overflow: hidden;
-      padding-bottom: 3rem;
+      padding-bottom: 2rem;
     }
 
     .header__bg {
@@ -41,7 +58,7 @@
       inset: 0;
       background-size: cover;
       background-position: center;
-      filter: brightness(0.35);
+      filter: brightness(0.32);
       z-index: 0;
     }
 
@@ -58,65 +75,80 @@
       z-index: 1;
       text-align: center;
       padding: 0 1.5rem;
+      animation: fadeInDown 0.9s ease both;
     }
 
-    .logo {
-      font-size: 0.85rem;
-      font-weight: 700;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: var(--naranja);
-      margin-bottom: 1.2rem;
-    }
+    .marca { margin-bottom: 0.75rem; }
 
-    .evento-nombre {
-      font-size: clamp(2rem, 6vw, 4rem);
+    .marca-principal {
+      display: block;
+      font-size: clamp(3.5rem, 12vw, 7rem);
       font-weight: 900;
-      line-height: 1.1;
-      color: #fff;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      color: var(--accent);
+      line-height: 1;
+      text-shadow: 0 0 50px var(--glow);
+      transition: color 0.7s ease, text-shadow 0.7s ease;
+    }
+
+    .marca-company {
+      display: block;
+      font-size: clamp(0.65rem, 1.8vw, 0.85rem);
+      font-weight: 700;
+      letter-spacing: 0.5em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.45);
+      margin-top: 0.2rem;
+    }
+
+    .evento-subtitulo {
+      font-size: clamp(0.95rem, 2.8vw, 1.4rem);
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.82);
+      letter-spacing: 0.06em;
       margin-bottom: 1rem;
+      margin-top: 0.5rem;
     }
 
     .evento-meta {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.6rem 1.5rem;
+      gap: 0.45rem 1.2rem;
       justify-content: center;
-      font-size: 0.95rem;
-      color: #bbb;
+      font-size: 0.85rem;
+      color: #999;
     }
-
     .evento-meta span { display: flex; align-items: center; gap: 0.4rem; }
 
     /* ── FRANJA ── */
     .franja {
       width: 100%;
-      background: var(--naranja);
-      padding: 0.75rem 1.5rem;
+      background: var(--accent);
+      padding: 0.6rem 1.5rem;
       text-align: center;
       font-weight: 700;
-      font-size: 0.9rem;
-      letter-spacing: 0.15em;
+      font-size: 0.82rem;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
-      color: #fff;
+      color: var(--btn-text);
+      transition: background 0.7s ease;
     }
 
-    /* ── FORMULARIO ── */
+    /* ── MAIN ── */
     .main {
-      max-width: 640px;
-      margin: 3rem auto;
-      padding: 0 1.25rem 4rem;
+      max-width: 600px;
+      margin: 1.5rem auto;
+      padding: 0 1.25rem 2.5rem;
     }
 
     .section-title {
-      font-size: 1.4rem;
+      font-size: 1.15rem;
       font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.1em;
       color: #fff;
-      margin-bottom: 2rem;
+      margin-bottom: 1.1rem;
       text-align: center;
     }
 
@@ -124,21 +156,25 @@
       background: var(--card);
       border: 1px solid var(--borde);
       border-radius: 12px;
-      padding: 2rem 1.75rem;
+      padding: 1.5rem;
+      transition: background 0.7s ease, border-color 0.7s ease;
     }
 
     .form-group {
-      margin-bottom: 1.4rem;
+      margin-bottom: 0.95rem;
+      opacity: 0;
+      animation: slideUp 0.4s ease both;
     }
 
     label {
       display: block;
-      font-size: 0.8rem;
+      font-size: 0.72rem;
       font-weight: 700;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: var(--naranja);
-      margin-bottom: 0.5rem;
+      color: var(--accent);
+      margin-bottom: 0.35rem;
+      transition: color 0.7s ease;
     }
 
     input[type="text"],
@@ -148,114 +184,109 @@
       background: var(--fondo);
       border: 1px solid var(--borde);
       border-radius: 6px;
-      padding: 0.75rem 1rem;
+      padding: 0.6rem 0.85rem;
       color: var(--texto);
-      font-size: 1rem;
-      transition: border-color 0.2s, box-shadow 0.2s;
+      font-size: 0.93rem;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.7s;
       outline: none;
     }
 
     input[type="text"]:focus,
     input[type="email"]:focus,
     textarea:focus {
-      border-color: var(--cyan);
-      box-shadow: 0 0 0 2px rgba(0, 229, 255, 0.12);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px var(--glow);
     }
 
-    textarea { resize: vertical; min-height: 90px; }
+    textarea { resize: vertical; min-height: 68px; }
 
     /* ── GÉNEROS ── */
     .generos-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 0.6rem;
+      gap: 0.45rem;
     }
 
     .generos-grid label {
       display: flex;
       align-items: center;
-      gap: 0.55rem;
+      gap: 0.5rem;
       color: var(--texto);
-      font-size: 0.9rem;
+      font-size: 0.87rem;
       font-weight: 400;
       letter-spacing: 0;
       text-transform: none;
       cursor: pointer;
-      padding: 0.55rem 0.75rem;
+      padding: 0.5rem 0.65rem;
       border: 1px solid var(--borde);
       border-radius: 6px;
       transition: border-color 0.2s, background 0.2s;
     }
 
-    .generos-grid label:hover { border-color: var(--naranja); background: rgba(255,107,0,0.06); }
+    .generos-grid label:hover {
+      border-color: var(--accent);
+      background: rgba(255, 255, 255, 0.03);
+    }
 
     .generos-grid input[type="checkbox"] {
-      accent-color: var(--naranja);
-      width: 16px; height: 16px;
+      accent-color: var(--accent);
+      width: 15px;
+      height: 15px;
       cursor: pointer;
+      flex-shrink: 0;
     }
 
     /* ── BOTÓN ── */
     .btn-registrar {
       width: 100%;
-      margin-top: 1.75rem;
-      padding: 1rem;
-      background: var(--naranja);
-      color: #fff;
-      font-size: 1rem;
+      margin-top: 1.1rem;
+      padding: 0.85rem;
+      background: var(--accent);
+      color: var(--btn-text);
+      font-size: 0.93rem;
       font-weight: 800;
-      letter-spacing: 0.15em;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
+      transition: background 0.2s, transform 0.1s, color 0.7s;
+      animation: pulseBtn 3s ease-in-out infinite;
     }
 
-    .btn-registrar:hover { background: #e05e00; }
-    .btn-registrar:active { transform: scale(0.98); }
-    .btn-registrar:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-registrar:hover  { background: var(--accent-hover); }
+    .btn-registrar:active { transform: scale(0.98); animation: none; }
+    .btn-registrar:disabled { opacity: 0.6; cursor: not-allowed; animation: none; }
 
-    /* ── MENSAJE ÉXITO ── */
+    /* ── ÉXITO ── */
     .success-msg {
       display: none;
       text-align: center;
-      padding: 2.5rem 1.5rem;
+      padding: 2rem 1.5rem;
     }
+    .success-msg .check    { font-size: 3rem; margin-bottom: 0.75rem; }
+    .success-msg h2        { font-size: 1.4rem; font-weight: 800; color: var(--accent); margin-bottom: 0.6rem; }
+    .success-msg p         { color: #888; font-size: 0.9rem; }
 
-    .success-msg .check {
-      font-size: 3.5rem;
-      margin-bottom: 1rem;
-    }
-
-    .success-msg h2 {
-      font-size: 1.6rem;
-      font-weight: 800;
-      color: var(--cyan);
-      margin-bottom: 0.75rem;
-    }
-
-    .success-msg p { color: #999; font-size: 0.95rem; }
-
-    .error-list { color: #ff4d4d; font-size: 0.8rem; margin-top: 0.35rem; padding-left: 0.5rem; }
+    .error-list { color: #ff4d4d; font-size: 0.77rem; margin-top: 0.3rem; padding-left: 0.35rem; }
 
     /* ── FOOTER ── */
     footer {
       border-top: 1px solid var(--borde);
-      padding: 1.5rem;
+      padding: 1.1rem;
       text-align: center;
-      font-size: 0.8rem;
-      color: #555;
-      letter-spacing: 0.05em;
+      font-size: 0.77rem;
+      color: #4a4a4a;
+      letter-spacing: 0.06em;
     }
-
-    footer span { color: var(--naranja); }
+    footer span { color: var(--accent); transition: color 0.7s ease; }
 
     /* ── RESPONSIVE ── */
     @media (max-width: 480px) {
-      .form-card { padding: 1.5rem 1.1rem; }
-      .generos-grid { grid-template-columns: 1fr; }
-      .header { min-height: 52vh; }
+      .form-card           { padding: 1.25rem 1rem; }
+      .generos-grid        { grid-template-columns: 1fr; }
+      .header              { min-height: 44vh; }
+      .marca-principal     { letter-spacing: 0.05em; }
     }
   </style>
 </head>
@@ -265,18 +296,22 @@
 <header class="header">
   <div class="header__bg"></div>
   <div class="header__content">
-    <p class="logo">Backstage Company</p>
-    <h1 class="evento-nombre">{{ evento.nombre }}</h1>
+    <div class="marca">
+      <span class="marca-principal">Backstage</span>
+      <span class="marca-company">Company</span>
+    </div>
+    <p class="evento-subtitulo">{{ evento.nombre }}</p>
     <div class="evento-meta">
       <span>
-        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
-          <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <rect x="3" y="4" width="18" height="18" rx="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
         </svg>
         {{ evento.fecha|date:"d \d\e F \d\e Y · H:i" }}
       </span>
       <span>
-        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
           <circle cx="12" cy="9" r="2.5"/>
         </svg>
@@ -289,20 +324,18 @@
 <!-- FRANJA -->
 <div class="franja">Reserva tu lugar · Cupos limitados</div>
 
-<!-- MAIN FORM -->
+<!-- FORM -->
 <main class="main">
   <h2 class="section-title">Formulario de Registro</h2>
 
   <div class="form-card">
 
-    <!-- SUCCESS -->
     <div class="success-msg" id="successMsg">
       <div class="check">🎶</div>
       <h2>¡Registro exitoso!</h2>
       <p>Te esperamos en <strong>{{ evento.lugar }}</strong>.<br>Revisa tu correo para más detalles.</p>
     </div>
 
-    <!-- FORM -->
     <form id="registroForm" novalidate>
       {% csrf_token %}
 
@@ -341,7 +374,9 @@
       </div>
 
       <div class="form-group">
-        <label for="id_comentario">Comentario <span style="color:#555;font-weight:400;text-transform:none;">(opcional)</span></label>
+        <label for="id_comentario">
+          Comentario <span style="color:#555;font-weight:400;text-transform:none;letter-spacing:0">(opcional)</span>
+        </label>
         {{ form.comentario }}
         <ul class="error-list" id="err_comentario"></ul>
       </div>
@@ -352,19 +387,57 @@
 </main>
 
 <!-- FOOTER -->
-<footer>
-  © Backstage Company · <span>Your Story, Our Stage</span>
-</footer>
+<footer>© Backstage Company · <span>Your Story, Our Stage</span></footer>
 
 <script>
-  const form = document.getElementById('registroForm');
-  const btn  = document.getElementById('btnRegistrar');
-  const successMsg = document.getElementById('successMsg');
+  /* ── TEMA DINÁMICO POR HORA ── */
+  const themes = {
+    morning: {                          // 06:00 – 11:59  cálido
+      accent: '#FF6B00', accentHover: '#e05e00',
+      fondo: '#0d0800',  card: '#170c00', borde: '#3a2200',
+      glow: 'rgba(255,107,0,0.35)', btnText: '#fff',
+    },
+    day: {                              // 12:00 – 18:59  neutro
+      accent: '#FF6B00', accentHover: '#e05e00',
+      fondo: '#0a0a0a',  card: '#1a1a1a', borde: '#333',
+      glow: 'rgba(255,107,0,0.35)', btnText: '#fff',
+    },
+    night: {                            // 19:00 – 05:59  frío nocturno
+      accent: '#00E5FF', accentHover: '#00b8cc',
+      fondo: '#000d1a',  card: '#001120', borde: '#003350',
+      glow: 'rgba(0,229,255,0.25)', btnText: '#000',
+    },
+  };
 
-  const errorFields = ['nombre','email','telefono','ciudad','generos','comentario'];
+  (function applyTheme() {
+    const h = new Date().getHours();
+    const t = h >= 6 && h < 12 ? themes.morning
+             : h >= 12 && h < 19 ? themes.day
+             : themes.night;
+    const s = document.documentElement.style;
+    s.setProperty('--accent',       t.accent);
+    s.setProperty('--accent-hover', t.accentHover);
+    s.setProperty('--fondo',        t.fondo);
+    s.setProperty('--card',         t.card);
+    s.setProperty('--borde',        t.borde);
+    s.setProperty('--glow',         t.glow);
+    s.setProperty('--btn-text',     t.btnText);
+    document.body.style.background = t.fondo;
+  })();
+
+  /* ── SLIDE-UP SECUENCIAL ── */
+  document.querySelectorAll('.form-group').forEach((el, i) => {
+    el.style.animationDelay = `${0.15 + i * 0.1}s`;
+  });
+
+  /* ── AJAX SUBMIT ── */
+  const form       = document.getElementById('registroForm');
+  const btn        = document.getElementById('btnRegistrar');
+  const successMsg = document.getElementById('successMsg');
+  const errFields  = ['nombre','email','telefono','ciudad','generos','comentario'];
 
   function clearErrors() {
-    errorFields.forEach(f => {
+    errFields.forEach(f => {
       const el = document.getElementById('err_' + f);
       if (el) el.innerHTML = '';
     });
@@ -383,13 +456,11 @@
     btn.disabled = true;
     btn.textContent = 'Enviando…';
 
-    const data = new FormData(form);
-
     try {
       const res  = await fetch(window.location.href, {
         method: 'POST',
         headers: { 'X-Requested-With': 'XMLHttpRequest' },
-        body: data,
+        body: new FormData(form),
       });
       const json = await res.json();
 
@@ -401,7 +472,7 @@
         btn.disabled = false;
         btn.textContent = 'Registrarme';
       }
-    } catch (err) {
+    } catch {
       btn.disabled = false;
       btn.textContent = 'Registrarme';
       alert('Error de conexión. Inténtalo de nuevo.');
