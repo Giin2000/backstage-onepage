@@ -1,0 +1,33 @@
+{% extends "admin/index.html" %}
+{% load registro_tags i18n %}
+
+{% block content %}
+{% get_stats as stats %}
+<div class="module" id="stats-panel" style="margin-bottom:20px; overflow:hidden;">
+    <h2 style="background:#417690; color:#fff; padding:10px 14px; margin:0; font-size:0.9rem; letter-spacing:.04em; text-transform:uppercase;">
+        Estadísticas Generales
+    </h2>
+    <div style="display:flex; flex-wrap:wrap; background:#fff;">
+        <div style="flex:1; min-width:130px; padding:18px 16px; text-align:center; border-right:1px solid #eee;">
+            <div style="font-size:2.4rem; font-weight:700; color:#417690; line-height:1;">{{ stats.total_registros }}</div>
+            <div style="font-size:.72rem; color:#888; text-transform:uppercase; margin-top:5px; letter-spacing:.05em;">Registros totales</div>
+        </div>
+        <div style="flex:1; min-width:130px; padding:18px 16px; text-align:center; border-right:1px solid #eee;">
+            <div style="font-size:2.4rem; font-weight:700; color:#2e7d32; line-height:1;">{{ stats.total_eventos_activos }}</div>
+            <div style="font-size:.72rem; color:#888; text-transform:uppercase; margin-top:5px; letter-spacing:.05em;">Eventos activos</div>
+        </div>
+        <div style="flex:1; min-width:130px; padding:18px 16px; text-align:center; border-right:1px solid #eee;">
+            <div style="font-size:1.35rem; font-weight:700; color:#e65100; line-height:1.25; word-break:break-word;">{{ stats.ciudad_top }}</div>
+            <div style="font-size:.72rem; color:#888; text-transform:uppercase; margin-top:5px; letter-spacing:.05em;">Ciudad frecuente</div>
+        </div>
+        <div style="flex:1; min-width:130px; padding:18px 16px; text-align:center;">
+            <div style="font-size:1.35rem; font-weight:700; color:#6a1b9a; line-height:1.25; word-break:break-word;">{{ stats.genero_top }}</div>
+            <div style="font-size:.72rem; color:#888; text-transform:uppercase; margin-top:5px; letter-spacing:.05em;">Género popular</div>
+        </div>
+    </div>
+    <div style="padding:8px 14px; background:#f8f9fa; border-top:1px solid #eee; text-align:right;">
+        <a href="/admin/estadisticas/" style="font-size:.83rem; color:#417690;">Ver estadísticas detalladas →</a>
+    </div>
+</div>
+{{ block.super }}
+{% endblock %}
