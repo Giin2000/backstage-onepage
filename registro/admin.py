@@ -1,14 +1,58 @@
+import csv
 from django.contrib import admin
+from django.http import HttpResponse
 from .models import Evento, Registro
+
+admin.site.site_header = 'Backstage Company'
+admin.site.site_title  = 'Backstage · Panel de Control'
+admin.site.index_title = 'Gestión de Eventos'
 
 
 @admin.register(Evento)
 class EventoAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'fecha', 'lugar', 'activo')
+    list_display        = ('nombre', 'fecha', 'lugar', 'activo', 'total_registros')
+    list_editable       = ('activo',)
+    list_filter         = ('activo', 'fecha')
+    search_fields       = ('nombre', 'lugar')
+    ordering            = ('-fecha',)
     prepopulated_fields = {'slug': ('nombre',)}
+
+    @admin.display(description='Registros')
+    def total_registros(self, obj):
+        return obj.registro_set.count()
+
+
+def exportar_csv(modeladmin, request, queryset):
+    response = HttpResponse(content_type='text/csv; charset=utf-8')
+    response['Content-Disposition'] = 'attachment; filename="registros.csv"'
+    response.write('﻿')  # BOM para que Excel abra UTF-8 correctamente
+
+    writer = csv.writer(response)
+    writer.writerow([
+        'Nombre', 'Email', 'Teléfono', 'Ciudad',
+        'Géneros', 'Evento', 'Fecha de registro', 'Comentario',
+    ])
+    for r in queryset.select_related('evento'):
+        writer.writerow([
+            r.nombre,
+            r.email,
+            r.telefono,
+            r.ciudad,
+            r.generos,
+            r.evento.nombre,
+            r.fecha_registro.strftime('%d/%m/%Y %H:%M'),
+            r.comentario,
+        ])
+    return response
+
+exportar_csv.short_description = 'Exportar registros a CSV'
 
 
 @admin.register(Registro)
 class RegistroAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'email', 'telefono', 'ciudad', 'evento', 'fecha_registro')
-    list_filter = ('evento', 'fecha_registro')
+    list_display  = ('nombre', 'email', 'telefono', 'ciudad', 'generos', 'evento', 'fecha_registro')
+    list_filter   = ('evento', 'ciudad')
+    search_fields = ('nombre', 'email', 'telefono')
+    ordering      = ('-fecha_registro',)
+    actions       = [exportar_csv]
+    list_per_page = 50
