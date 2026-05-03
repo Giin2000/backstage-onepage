@@ -22,12 +22,22 @@ def registro_evento(request, slug):
         if form.is_valid():
             registro = form.save(commit=False)
             registro.evento = evento
-            registro.generos = ', '.join(form.cleaned_data['generos'])
+            generos_list = list(form.cleaned_data['generos'])
+            genero_otro = form.cleaned_data.get('genero_otro', '').strip()
+            if genero_otro:
+                if 'Otro' in generos_list:
+                    generos_list.remove('Otro')
+                generos_list.append(genero_otro)
+            registro.generos = ', '.join(generos_list)
             subgeneros = form.cleaned_data.get('subgeneros', '').strip()
             if subgeneros:
                 registro.generos += ', ' + subgeneros
             registro.ciudad = form.cleaned_data.get('ciudad', '')
-            registro.experiencia = ', '.join(form.cleaned_data.get('experiencia', []))
+            experiencia_list = [v for v in form.cleaned_data.get('experiencia', []) if v != 'Otro']
+            experiencia_otro = form.cleaned_data.get('experiencia_otro', '').strip()
+            if experiencia_otro:
+                experiencia_list.append(experiencia_otro)
+            registro.experiencia = ', '.join(experiencia_list)
             registro.save()
             return JsonResponse({'success': True})
         return JsonResponse({'success': False, 'errors': form.errors})

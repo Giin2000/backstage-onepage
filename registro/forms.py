@@ -17,16 +17,16 @@ EXPERIENCIA_CHOICES = [
     ('Hacer networking', 'Hacer networking'),
     ('Trabajar en eventos', 'Trabajar en eventos'),
     ('Colaborar con la productora', 'Colaborar con la productora'),
+    ('Presentarme como artista', 'Presentarme como artista'),
+    ('Otro', 'Otro'),
 ]
 
 CIUDAD_CHOICES = [
     ('', '— Selecciona tu ciudad —'),
     ('Ciudades frecuentes', [
-        ('Huancayo', 'Huancayo'),
-        ('Lima', 'Lima'),
         ('Oxapampa', 'Oxapampa'),
     ]),
-    ('Otros departamentos', [
+    ('Otras ciudades', [
         ('Amazonas', 'Amazonas'),
         ('Áncash', 'Áncash'),
         ('Apurímac', 'Apurímac'),
@@ -35,10 +35,12 @@ CIUDAD_CHOICES = [
         ('Cajamarca', 'Cajamarca'),
         ('Cusco', 'Cusco'),
         ('Huancavelica', 'Huancavelica'),
+        ('Huancayo', 'Huancayo'),
         ('Ica', 'Ica'),
         ('Junín', 'Junín'),
         ('La Libertad', 'La Libertad'),
         ('Lambayeque', 'Lambayeque'),
+        ('Lima', 'Lima'),
         ('Loreto', 'Loreto'),
         ('Madre de Dios', 'Madre de Dios'),
         ('Moquegua', 'Moquegua'),
@@ -63,11 +65,17 @@ class RegistroForm(forms.ModelForm):
         label='¿Cuál ciudad?',
         required=False,
         max_length=80,
+        widget=forms.TextInput(attrs={'placeholder': 'Escribe tu ciudad'}),
     )
     generos = forms.MultipleChoiceField(
         choices=GENEROS_CHOICES,
         widget=forms.CheckboxSelectMultiple,
         label='Géneros musicales',
+    )
+    genero_otro = forms.CharField(
+        required=False,
+        max_length=100,
+        widget=forms.TextInput(attrs={'placeholder': '¿Qué género escuchas?'}),
     )
     subgeneros = forms.CharField(
         required=False,
@@ -77,7 +85,12 @@ class RegistroForm(forms.ModelForm):
         choices=EXPERIENCIA_CHOICES,
         widget=forms.CheckboxSelectMultiple,
         label='Experiencia / Interés',
+        required=True,
+    )
+    experiencia_otro = forms.CharField(
         required=False,
+        max_length=100,
+        widget=forms.TextInput(attrs={'placeholder': 'Especifica tu interés'}),
     )
 
     class Meta:

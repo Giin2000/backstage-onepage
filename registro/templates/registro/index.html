@@ -419,7 +419,7 @@
 </header>
 
 <!-- FRANJA -->
-<div class="franja">Reserva tu lugar · Cupos limitados</div>
+<div class="franja">Reserva tu lugar · Cupos limitados · Registro</div>
 
 <!-- FORM -->
 <main class="main">
@@ -458,7 +458,7 @@
           <ul class="error-list" id="err_telefono"></ul>
         </div>
         <div class="form-group">
-          <label for="id_ciudad">Ciudad</label>
+          <label for="id_ciudad">¿Cuál es tu ciudad?</label>
           {{ form.ciudad }}
           <ul class="error-list" id="err_ciudad"></ul>
         </div>
@@ -489,17 +489,20 @@
           <div class="pills-container" id="subgeneros-container"></div>
         </div>
 
+        <!-- "Otro" género (condicional) -->
+        <div class="ciudad-campo oculto" id="genero-otro-wrap" style="margin-top:0.65rem;">
+          {{ form.genero_otro }}
+        </div>
+
         {{ form.subgeneros }}
         <ul class="error-list" id="err_generos"></ul>
       </div>
 
       <!-- Experiencia / Interés -->
       <div class="form-group">
-        <span class="pills-label">
-          Experiencia / Interés
-          <span style="color:#555;font-weight:400;text-transform:none;letter-spacing:0"> (opcional)</span>
-        </span>
-        <div class="pills-container">
+        <span class="pills-label">Experiencia / Interés *</span>
+        <p style="font-size:0.72rem;color:rgba(255,255,255,0.45);margin-bottom:0.5rem;font-weight:400;letter-spacing:0;text-transform:none;">¿Qué tipo de experiencia buscas?</p>
+        <div class="pills-container" id="experiencia-container">
           {% for choice in form.experiencia %}
             <div class="pill-wrap">
               {{ choice.tag }}
@@ -507,15 +510,19 @@
             </div>
           {% endfor %}
         </div>
+
+        <!-- "Otro" experiencia (condicional) -->
+        <div class="ciudad-campo oculto" id="experiencia-otro-wrap" style="margin-top:0.65rem;">
+          {{ form.experiencia_otro }}
+        </div>
+
         <ul class="error-list" id="err_experiencia"></ul>
       </div>
 
       <!-- Comentario -->
       <div class="form-group">
-        <label for="id_comentario">
-          Comentario
-          <span style="color:#555;font-weight:400;text-transform:none;letter-spacing:0"> (opcional)</span>
-        </label>
+        <label for="id_comentario">Comentario <span style="color:#555;font-weight:400;text-transform:none;letter-spacing:0">(opcional)</span></label>
+        <p style="font-size:0.72rem;color:rgba(255,255,255,0.45);margin-bottom:0.4rem;font-weight:400;letter-spacing:0;text-transform:none;">Comparte una idea, visión o colaboración que te gustaría desarrollar (opcional)</p>
         {{ form.comentario }}
         <ul class="error-list" id="err_comentario"></ul>
       </div>
@@ -587,6 +594,33 @@
     toggleOtra();
   })();
 
+  /* ── GÉNERO OTRO ── */
+  (function () {
+    const otroWrap = document.getElementById('genero-otro-wrap');
+    function toggleGeneroOtro() {
+      const otroChecked = !!document.querySelector('#generos-container input[type=checkbox][value="Otro"]:checked');
+      otroWrap.classList.toggle('visible', otroChecked);
+      otroWrap.classList.toggle('oculto',  !otroChecked);
+    }
+    const otroCb = document.querySelector('#generos-container input[type=checkbox][value="Otro"]');
+    if (otroCb) otroCb.addEventListener('change', toggleGeneroOtro);
+    toggleGeneroOtro();
+  })();
+
+  /* ── EXPERIENCIA OTRO ── */
+  (function () {
+    const otroWrap = document.getElementById('experiencia-otro-wrap');
+    function toggleExpOtro() {
+      const otroChecked = !!document.querySelector('#experiencia-container input[type=checkbox][value="Otro"]:checked');
+      otroWrap.classList.toggle('visible', otroChecked);
+      otroWrap.classList.toggle('oculto',  !otroChecked);
+    }
+    document.querySelectorAll('#experiencia-container input[type=checkbox]').forEach(cb => {
+      if (cb.value === 'Otro') cb.addEventListener('change', toggleExpOtro);
+    });
+    toggleExpOtro();
+  })();
+
   /* ── SUBGÉNEROS ── */
   const subgenerosPorGenero = {
     'Techno':    ['Melodic Techno', 'Hard Techno', 'Peak Time', 'Industrial'],
@@ -652,11 +686,10 @@
 
   /* ── PLACEHOLDERS ── */
   const ph = {
-    id_nombre:      'Tu nombre completo',
-    id_email:       'tucorreo@gmail.com',
-    id_telefono:    '+51 999 000 000',
-    id_ciudad_otra: 'Ej: Buenos Aires, Bogotá...',
-    id_comentario:  '¿Algo que quieras contarnos?',
+    id_nombre:     'Tu nombre completo',
+    id_email:      'tucorreo@gmail.com',
+    id_telefono:   '+51 999 000 000',
+    id_comentario: 'Comparte una idea, visión o colaboración que te gustaría desarrollar',
   };
   Object.entries(ph).forEach(([id, text]) => {
     const el = document.getElementById(id);
@@ -667,7 +700,7 @@
   const form       = document.getElementById('registroForm');
   const btn        = document.getElementById('btnRegistrar');
   const successMsg = document.getElementById('successMsg');
-  const errFields  = ['nombre', 'email', 'telefono', 'ciudad', 'ciudad_otra', 'generos', 'experiencia', 'comentario'];
+  const errFields  = ['nombre', 'email', 'telefono', 'ciudad', 'ciudad_otra', 'generos', 'genero_otro', 'experiencia', 'experiencia_otro', 'comentario'];
 
   function clearErrors() {
     errFields.forEach(f => {
