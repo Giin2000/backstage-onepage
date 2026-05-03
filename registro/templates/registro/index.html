@@ -63,7 +63,18 @@
       z-index: 0;
     }
 
-    {% if evento.imagen_banner %}
+    {% if evento.video_banner %}
+    .header__bg { display: none; }
+    .header__video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.3);
+      z-index: 0;
+    }
+    {% elif evento.imagen_banner %}
     .header__bg { background-image: url('{{ evento.imagen_banner.url }}'); }
     {% else %}
     .header__bg {
@@ -398,7 +409,13 @@
 
 <!-- HEADER -->
 <header class="header">
+  {% if evento.video_banner %}
+  <video class="header__video" autoplay loop muted playsinline>
+    <source src="{{ evento.video_banner.url }}" type="video/mp4">
+  </video>
+  {% else %}
   <div class="header__bg"></div>
+  {% endif %}
   <div class="header__content">
     <div class="marca">
       <span class="marca-principal">Backstage</span>
@@ -436,8 +453,8 @@
 
     <div class="success-msg" id="successMsg">
       <div class="check">🎶</div>
-      <h2>¡Registro exitoso!</h2>
-      <p>Te esperamos en <strong>{{ evento.lugar }}</strong>.<br>Revisa tu correo para más detalles.</p>
+      <h2>¡Gracias por tu registro, bienvenid@ a Backstage!</h2>
+      <p style="font-size:0.78rem">Nos vemos en el escenario 🎶</p>
     </div>
 
     <form id="registroForm" novalidate>

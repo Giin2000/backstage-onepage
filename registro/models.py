@@ -7,11 +7,15 @@ class Evento(models.Model):
     fecha = models.DateTimeField()
     lugar = models.CharField(max_length=200)
     imagen_banner = models.ImageField(upload_to='banners/', blank=True)
+    video_banner = models.FileField(upload_to='videos/', blank=True, null=True)
     slug = models.SlugField(unique=True)
     activo = models.BooleanField(default=True)
 
     def __str__(self):
         return self.nombre
+
+    def get_absolute_url(self):
+        return f'/{self.slug}/'
 
 
 class Registro(models.Model):
