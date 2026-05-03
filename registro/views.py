@@ -1,15 +1,17 @@
+import csv
 from collections import Counter
 from datetime import timedelta
 
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.decorators import login_required
 from django.db.models import Count
-from django.http import JsonResponse
-from django.shortcuts import get_object_or_404, render
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods
 
 from .models import Evento, Registro
-from .forms import RegistroForm
+from .forms import EventoForm, RegistroForm
 
 
 @require_http_methods(['GET', 'POST'])
@@ -95,3 +97,76 @@ def estadisticas_admin(request):
         'top_generos': top_generos,
         'semana': semana,
     })
+
+
+# ── Panel de Control ────────────────────────────────────────────────────────
+
+@login_required(login_url='/admin/login/')
+def panel_index(request):
+    return render(request, 'panel/index.html', {
+        'total_eventos': Evento.objects.count(),
+        'total_registros': Registro.objects.count(),
+    })
+
+
+@login_required(login_url='/admin/login/')
+def panel_evento_form(request, evento_id=None):
+    evento = get_object_or_404(Evento, pk=evento_id) if evento_id else None
+
+    if request.method == 'POST':
+        form = EventoForm(request.POST, request.FILES, instance=evento)
+        if form.is_valid():
+            evento = form.save()
+            return redirect(f'/panel/evento/{evento.pk}/editar/?guardado=1')
+    else:
+        form = EventoForm(instance=evento)
+
+    evento_url = request.build_absolute_uri(evento.get_absolute_url()) if evento and evento.slug else None
+
+    return render(request, 'panel/evento_form.html', {
+        'form': form,
+        'evento': evento,
+        'guardado': request.GET.get('guardado') == '1',
+        'evento_url': evento_url,
+    })
+
+
+@login_required(login_url='/admin/login/')
+def panel_registros(request):
+    eventos = Evento.objects.all().order_by('-fecha')
+    evento_id = request.GET.get('evento')
+    evento_sel = None
+    registros = Registro.objects.select_related('evento').order_by('-fecha_registro')
+
+    if evento_id:
+        evento_sel = get_object_or_404(Evento, pk=evento_id)
+        registros = registros.filter(evento=evento_sel)
+
+    return render(request, 'panel/registros.html', {
+        'eventos': eventos,
+        'evento_sel': evento_sel,
+        'registros': registros,
+        'total': registros.count(),
+        'evento_id': evento_id or '',
+    })
+
+
+@login_required(login_url='/admin/login/')
+def panel_exportar_csv(request):
+    evento_id = request.GET.get('evento')
+    response = HttpResponse(content_type='text/csv; charset=utf-8')
+    response['Content-Disposition'] = 'attachment; filename="registros.csv"'
+    response.write('﻿')
+
+    writer = csv.writer(response)
+    writer.writerow(['Nombre', 'Email', 'Teléfono', 'Ciudad', 'Géneros', 'Experiencia', 'Evento', 'Fecha'])
+    qs = Registro.objects.select_related('evento').order_by('-fecha_registro')
+    if evento_id:
+        qs = qs.filter(evento_id=evento_id)
+    for r in qs:
+        writer.writerow([
+            r.nombre, r.email, r.telefono, r.ciudad,
+            r.generos, r.experiencia, r.evento.nombre,
+            r.fecha_registro.strftime('%d/%m/%Y %H:%M'),
+        ])
+    return response

@@ -1,5 +1,5 @@
 from django import forms
-from .models import Registro
+from .models import Evento, Registro
 
 GENEROS_CHOICES = [
     ('Rock', 'Rock'),
@@ -55,6 +55,21 @@ CIUDAD_CHOICES = [
     ]),
     ('otra', '+ Otra ciudad'),
 ]
+
+
+class EventoForm(forms.ModelForm):
+    class Meta:
+        model = Evento
+        fields = ('nombre', 'descripcion', 'fecha', 'lugar', 'imagen_banner', 'video_banner', 'slug', 'activo')
+        widgets = {
+            'fecha': forms.DateTimeInput(attrs={'type': 'datetime-local'}, format='%Y-%m-%dT%H:%M'),
+            'descripcion': forms.Textarea(attrs={'rows': 3}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk and self.instance.fecha:
+            self.initial['fecha'] = self.instance.fecha.strftime('%Y-%m-%dT%H:%M')
 
 
 class RegistroForm(forms.ModelForm):

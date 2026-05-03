@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registros · Backstage Panel</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --orange: #FF6B00;
+      --cyan: #00E5FF;
+      --fondo: #0a0a0a;
+      --card: #141414;
+      --borde: #222;
+      --texto: #e0e0e0;
+    }
+    body { background: var(--fondo); color: var(--texto); font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; }
+
+    /* ── HEADER ── */
+    .panel-header {
+      background: #0f0f0f; border-bottom: 1px solid #1e1e1e;
+      padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between;
+    }
+    .logo { text-decoration: none; line-height: 1; }
+    .logo-principal { font-size: 1.2rem; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase; color: var(--orange); display: block; }
+    .logo-sub { font-size: 0.5rem; font-weight: 700; letter-spacing: 0.4em; text-transform: uppercase; color: rgba(255,255,255,0.2); margin-top: 0.1rem; display: block; }
+    .btn-back { font-size: 0.75rem; color: #666; text-decoration: none; padding: 0.3rem 0.7rem; border: 1px solid #2a2a2a; border-radius: 4px; transition: color 0.2s, border-color 0.2s; }
+    .btn-back:hover { color: #ccc; border-color: #555; }
+
+    /* ── MAIN ── */
+    .panel-main { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+    /* ── TOOLBAR ── */
+    .toolbar {
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+    .toolbar-title { font-size: 1.25rem; font-weight: 900; color: #fff; margin-right: auto; }
+
+    .filter-wrap { display: flex; align-items: center; gap: 0.5rem; }
+    .filter-label { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #555; }
+    .filter-select {
+      background: var(--card); border: 1px solid #2a2a2a; border-radius: 6px;
+      padding: 0.45rem 2rem 0.45rem 0.75rem; color: var(--texto); font-size: 0.82rem;
+      outline: none; cursor: pointer; appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23666' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 0.65rem center;
+      transition: border-color 0.2s;
+    }
+    .filter-select:focus { border-color: var(--cyan); }
+
+    .counter-badge {
+      background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 20px;
+      padding: 0.3rem 0.85rem; font-size: 0.75rem; color: #888;
+      white-space: nowrap;
+    }
+    .counter-badge strong { color: var(--cyan); font-size: 1rem; }
+
+    .btn-export {
+      padding: 0.48rem 1rem; background: transparent; border: 1px solid #2a5a2a; border-radius: 6px;
+      color: #4CAF50; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em;
+      text-transform: uppercase; text-decoration: none; transition: background 0.2s;
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      white-space: nowrap;
+    }
+    .btn-export:hover { background: rgba(76,175,80,0.08); }
+
+    /* ── TABLE ── */
+    .table-wrap {
+      background: var(--card); border: 1px solid var(--borde); border-radius: 12px;
+      overflow: hidden; overflow-x: auto;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 0.82rem; min-width: 700px; }
+    thead th {
+      background: #111; padding: 0.75rem 1rem; text-align: left;
+      font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: #555; border-bottom: 1px solid #1e1e1e;
+      white-space: nowrap;
+    }
+    tbody tr { border-bottom: 1px solid #1a1a1a; transition: background 0.15s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #181818; }
+    td { padding: 0.75rem 1rem; color: #ccc; vertical-align: middle; }
+    td.nombre { font-weight: 600; color: #fff; }
+    td.email  { font-family: monospace; font-size: 0.78rem; color: #888; }
+    td.tel    { font-family: monospace; font-size: 0.78rem; color: #888; }
+    td.generos { max-width: 180px; }
+    .genero-pill {
+      display: inline-block; padding: 0.18rem 0.55rem; background: rgba(255,107,0,0.1);
+      border: 1px solid rgba(255,107,0,0.2); border-radius: 100px;
+      font-size: 0.68rem; color: var(--orange); margin: 0.1rem 0.1rem 0.1rem 0;
+      white-space: nowrap;
+    }
+    td.fecha { font-size: 0.75rem; color: #555; white-space: nowrap; }
+    td.evento-col { font-size: 0.75rem; color: #777; }
+
+    /* ── EMPTY STATE ── */
+    .empty-state {
+      text-align: center; padding: 4rem 2rem;
+      background: var(--card); border: 1px solid var(--borde); border-radius: 12px;
+    }
+    .empty-state__icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+    .empty-state__title { font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 0.4rem; }
+    .empty-state__sub { font-size: 0.8rem; color: #555; }
+
+    footer { text-align: center; padding: 2rem; font-size: 0.7rem; color: #2a2a2a; letter-spacing: 0.08em; }
+
+    @media (max-width: 640px) {
+      .toolbar { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+      .toolbar-title { margin-right: 0; }
+      .panel-header { padding: 0.85rem 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="panel-header">
+  <a href="/panel/" class="logo">
+    <span class="logo-principal">Backstage</span>
+    <span class="logo-sub">Company · Panel</span>
+  </a>
+  <a href="/panel/" class="btn-back">← Volver al panel</a>
+</header>
+
+<main class="panel-main">
+  <div class="toolbar">
+    <h1 class="toolbar-title">Registros</h1>
+
+    <div class="filter-wrap">
+      <span class="filter-label">Evento</span>
+      <form method="GET" id="filtro-form">
+        <select name="evento" class="filter-select" onchange="this.form.submit()">
+          <option value="">— Todos los eventos —</option>
+          {% for ev in eventos %}
+          <option value="{{ ev.pk }}" {% if ev.pk|stringformat:"s" == evento_id %}selected{% endif %}>{{ ev.nombre }}</option>
+          {% endfor %}
+        </select>
+      </form>
+    </div>
+
+    <div class="counter-badge">
+      <strong>{{ total }}</strong> registro{{ total|pluralize }}
+    </div>
+
+    <a href="/panel/exportar-csv/{% if evento_id %}?evento={{ evento_id }}{% endif %}" class="btn-export">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/>
+        <line x1="12" y1="15" x2="12" y2="3"/>
+      </svg>
+      Exportar CSV
+    </a>
+  </div>
+
+  {% if registros %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Email</th>
+          <th>Teléfono</th>
+          <th>Ciudad</th>
+          <th>Géneros</th>
+          {% if not evento_id %}<th>Evento</th>{% endif %}
+          <th>Fecha</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in registros %}
+        <tr>
+          <td class="nombre">{{ r.nombre }}</td>
+          <td class="email">{{ r.email }}</td>
+          <td class="tel">{{ r.telefono }}</td>
+          <td>{{ r.ciudad }}</td>
+          <td class="generos">
+            {% for g in r.generos.split:"," %}
+              {% if g.strip %}
+              <span class="genero-pill">{{ g.strip }}</span>
+              {% endif %}
+            {% endfor %}
+          </td>
+          {% if not evento_id %}<td class="evento-col">{{ r.evento.nombre }}</td>{% endif %}
+          <td class="fecha">{{ r.fecha_registro|date:"d/m/Y H:i" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-state__icon">📋</div>
+    <p class="empty-state__title">No hay registros{% if evento_sel %} para este evento{% endif %}</p>
+    <p class="empty-state__sub">{% if evento_sel %}Aún no se han registrado personas para <strong>{{ evento_sel.nombre }}</strong>.{% else %}Selecciona un evento del filtro o espera a que lleguen registros.{% endif %}</p>
+  </div>
+  {% endif %}
+</main>
+
+<footer>© Backstage Company · Panel de Control</footer>
+
+</body>
+</html>
