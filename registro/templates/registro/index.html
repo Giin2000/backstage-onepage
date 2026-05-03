@@ -528,8 +528,7 @@
 
       <!-- Comentario -->
       <div class="form-group">
-        <label for="id_comentario">Comentario <span style="color:#555;font-weight:400;text-transform:none;letter-spacing:0">(opcional)</span></label>
-        <p style="font-size:0.72rem;color:rgba(255,255,255,0.45);margin-bottom:0.4rem;font-weight:400;letter-spacing:0;text-transform:none;">Comparte una idea, visión o colaboración que te gustaría desarrollar (opcional)</p>
+        <label for="id_comentario">Experiencias nuevas en la ciudad <span style="color:#555;font-weight:400;text-transform:none;letter-spacing:0">(opcional)</span></label>
         {{ form.comentario }}
         <ul class="error-list" id="err_comentario"></ul>
       </div>
@@ -697,7 +696,7 @@
     id_nombre:     'Tu nombre completo',
     id_email:      'tucorreo@gmail.com',
     id_telefono:   '+51 999 000 000',
-    id_comentario: 'Comparte una idea, visión o colaboración que te gustaría desarrollar',
+    id_comentario: 'Comenta qué artistas, bandas, marcas o shows te gustaría ver',
   };
   Object.entries(ph).forEach(([id, text]) => {
     const el = document.getElementById(id);
