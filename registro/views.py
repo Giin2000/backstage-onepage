@@ -117,7 +117,7 @@ def panel_evento_form(request, evento_id=None):
         form = EventoForm(request.POST, request.FILES, instance=evento)
         if form.is_valid():
             evento = form.save()
-            return redirect(f'/panel/evento/{evento.pk}/editar/?guardado=1')
+            return redirect(f'/studio/evento/{evento.pk}/editar/?guardado=1')
     else:
         form = EventoForm(instance=evento)
 

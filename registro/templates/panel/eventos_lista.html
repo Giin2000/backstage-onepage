@@ -129,17 +129,17 @@
 <body>
 
 <header class="panel-header">
-  <a href="/panel/" class="logo">
+  <a href="/studio/" class="logo">
     <span class="logo-principal">Backstage</span>
     <span class="logo-sub">Company · Panel</span>
   </a>
-  <a href="/panel/" class="btn-back">← Volver al panel</a>
+  <a href="/studio/" class="btn-back">← Volver al panel</a>
 </header>
 
 <main class="panel-main">
   <div class="toolbar">
     <h1 class="toolbar-title">Eventos</h1>
-    <a href="/panel/evento/nuevo/" class="btn-crear">
+    <a href="/studio/evento/nuevo/" class="btn-crear">
       <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
         <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
       </svg>
@@ -187,8 +187,8 @@
       </div>
 
       <div class="evento-actions">
-        <a href="/panel/evento/{{ ev.pk }}/editar/" class="btn-accion btn-editar">Editar</a>
-        <a href="/panel/registros/?evento={{ ev.pk }}" class="btn-accion btn-registros">Ver registros</a>
+        <a href="/studio/evento/{{ ev.pk }}/editar/" class="btn-accion btn-editar">Editar</a>
+        <a href="/studio/registros/?evento={{ ev.pk }}" class="btn-accion btn-registros">Ver registros</a>
       </div>
     </div>
     {% endfor %}
@@ -199,7 +199,7 @@
     <div class="empty-state__icon">📅</div>
     <p class="empty-state__title">No hay eventos todavía</p>
     <p class="empty-state__sub">Crea tu primer evento para comenzar a recibir registros.</p>
-    <a href="/panel/evento/nuevo/" class="btn-crear" style="display:inline-flex">
+    <a href="/studio/evento/nuevo/" class="btn-crear" style="display:inline-flex">
       <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
         <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
       </svg>

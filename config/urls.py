@@ -18,11 +18,11 @@ urlpatterns = [
     path('admin/estadisticas/', estadisticas_admin, name='admin_estadisticas'),
     path('admin/', admin.site.urls),
     # Panel personalizado
-    path('panel/', panel_index, name='panel_index'),
-    path('panel/evento/nuevo/', panel_evento_form, name='panel_evento_nuevo'),
-    path('panel/evento/<int:evento_id>/editar/', panel_evento_form, name='panel_evento_editar'),
-    path('panel/eventos/', panel_eventos_lista, name='panel_eventos_lista'),
-    path('panel/registros/', panel_registros, name='panel_registros'),
-    path('panel/exportar-csv/', panel_exportar_csv, name='panel_exportar_csv'),
+    path('studio/', panel_index, name='panel_index'),
+    path('studio/evento/nuevo/', panel_evento_form, name='panel_evento_nuevo'),
+    path('studio/evento/<int:evento_id>/editar/', panel_evento_form, name='panel_evento_editar'),
+    path('studio/eventos/', panel_eventos_lista, name='panel_eventos_lista'),
+    path('studio/registros/', panel_registros, name='panel_registros'),
+    path('studio/exportar-csv/', panel_exportar_csv, name='panel_exportar_csv'),
     path('', include('registro.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

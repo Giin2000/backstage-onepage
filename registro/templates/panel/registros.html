@@ -115,11 +115,11 @@
 <body>
 
 <header class="panel-header">
-  <a href="/panel/" class="logo">
+  <a href="/studio/" class="logo">
     <span class="logo-principal">Backstage</span>
     <span class="logo-sub">Company · Panel</span>
   </a>
-  <a href="/panel/" class="btn-back">← Volver al panel</a>
+  <a href="/studio/" class="btn-back">← Volver al panel</a>
 </header>
 
 <main class="panel-main">
@@ -142,7 +142,7 @@
       <strong>{{ total }}</strong> registro{{ total|pluralize }}
     </div>
 
-    <a href="/panel/exportar-csv/{% if evento_id %}?evento={{ evento_id }}{% endif %}" class="btn-export">
+    <a href="/studio/exportar-csv/{% if evento_id %}?evento={{ evento_id }}{% endif %}" class="btn-export">
       <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
         <polyline points="7 10 12 15 17 10"/>
