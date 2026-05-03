@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eventos · Backstage Panel</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --orange: #FF6B00;
+      --cyan: #00E5FF;
+      --fondo: #0a0a0a;
+      --card: #141414;
+      --borde: #222;
+      --texto: #e0e0e0;
+    }
+    body { background: var(--fondo); color: var(--texto); font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; }
+
+    /* ── HEADER ── */
+    .panel-header {
+      background: #0f0f0f; border-bottom: 1px solid #1e1e1e;
+      padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between;
+    }
+    .logo { text-decoration: none; line-height: 1; }
+    .logo-principal { font-size: 1.2rem; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase; color: var(--orange); display: block; }
+    .logo-sub { font-size: 0.5rem; font-weight: 700; letter-spacing: 0.4em; text-transform: uppercase; color: rgba(255,255,255,0.2); margin-top: 0.1rem; display: block; }
+    .btn-back { font-size: 0.75rem; color: #666; text-decoration: none; padding: 0.3rem 0.7rem; border: 1px solid #2a2a2a; border-radius: 4px; transition: color 0.2s, border-color 0.2s; }
+    .btn-back:hover { color: #ccc; border-color: #555; }
+
+    /* ── MAIN ── */
+    .panel-main { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+    /* ── TOOLBAR ── */
+    .toolbar {
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+      margin-bottom: 1.75rem;
+    }
+    .toolbar-title { font-size: 1.25rem; font-weight: 900; color: #fff; margin-right: auto; }
+
+    .btn-crear {
+      padding: 0.55rem 1.25rem; background: var(--orange); border: none; border-radius: 8px;
+      color: #fff; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em;
+      text-transform: uppercase; text-decoration: none; display: inline-flex;
+      align-items: center; gap: 0.45rem; transition: opacity 0.2s; white-space: nowrap;
+    }
+    .btn-crear:hover { opacity: 0.85; }
+
+    /* ── CARDS LISTA ── */
+    .eventos-list { display: flex; flex-direction: column; gap: 0.75rem; }
+
+    .evento-card {
+      background: var(--card); border: 1px solid var(--borde); border-radius: 12px;
+      padding: 1.25rem 1.5rem; display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.75rem 1.5rem; align-items: center;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .evento-card:hover { border-color: #333; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+
+    .evento-info { display: flex; flex-direction: column; gap: 0.35rem; min-width: 0; }
+
+    .evento-nombre {
+      font-size: 1rem; font-weight: 800; color: #fff;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    .evento-meta {
+      display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; align-items: center;
+      font-size: 0.76rem; color: #666;
+    }
+    .meta-item { display: flex; align-items: center; gap: 0.3rem; }
+    .meta-item svg { flex-shrink: 0; opacity: 0.5; }
+
+    .evento-url {
+      font-family: monospace; font-size: 0.72rem; color: #444;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      max-width: 300px;
+    }
+
+    /* estado badge */
+    .badge {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      padding: 0.18rem 0.6rem; border-radius: 100px; font-size: 0.68rem; font-weight: 700;
+      letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap;
+    }
+    .badge--active { background: rgba(76,175,80,0.12); border: 1px solid rgba(76,175,80,0.25); color: #4CAF50; }
+    .badge--inactive { background: rgba(255,255,255,0.04); border: 1px solid #2a2a2a; color: #555; }
+    .badge__dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+
+    /* registros count */
+    .reg-count {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      font-size: 0.76rem; color: #555;
+    }
+    .reg-count strong { color: var(--cyan); font-size: 0.9rem; }
+
+    /* acciones */
+    .evento-actions { display: flex; gap: 0.5rem; align-items: center; flex-shrink: 0; }
+
+    .btn-accion {
+      padding: 0.4rem 0.85rem; border-radius: 6px; font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.05em; text-transform: uppercase; text-decoration: none;
+      transition: opacity 0.2s, background 0.2s; white-space: nowrap;
+    }
+    .btn-editar { background: rgba(255,107,0,0.1); border: 1px solid rgba(255,107,0,0.25); color: var(--orange); }
+    .btn-editar:hover { background: rgba(255,107,0,0.18); }
+    .btn-registros { background: rgba(0,229,255,0.07); border: 1px solid rgba(0,229,255,0.18); color: var(--cyan); }
+    .btn-registros:hover { background: rgba(0,229,255,0.13); }
+
+    /* ── EMPTY ── */
+    .empty-state {
+      text-align: center; padding: 4rem 2rem;
+      background: var(--card); border: 1px solid var(--borde); border-radius: 12px;
+    }
+    .empty-state__icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+    .empty-state__title { font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 0.4rem; }
+    .empty-state__sub { font-size: 0.8rem; color: #555; margin-bottom: 1.5rem; }
+
+    footer { text-align: center; padding: 2rem; font-size: 0.7rem; color: #2a2a2a; letter-spacing: 0.08em; }
+
+    @media (max-width: 640px) {
+      .evento-card { grid-template-columns: 1fr; }
+      .evento-actions { justify-content: flex-start; }
+      .panel-header { padding: 0.85rem 1rem; }
+      .evento-url { max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="panel-header">
+  <a href="/panel/" class="logo">
+    <span class="logo-principal">Backstage</span>
+    <span class="logo-sub">Company · Panel</span>
+  </a>
+  <a href="/panel/" class="btn-back">← Volver al panel</a>
+</header>
+
+<main class="panel-main">
+  <div class="toolbar">
+    <h1 class="toolbar-title">Eventos</h1>
+    <a href="/panel/evento/nuevo/" class="btn-crear">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      Crear nuevo evento
+    </a>
+  </div>
+
+  {% if eventos %}
+  <div class="eventos-list">
+    {% for ev in eventos %}
+    <div class="evento-card">
+      <div class="evento-info">
+        <div class="evento-nombre">{{ ev.nombre }}</div>
+        <div class="evento-meta">
+          <!-- Fecha -->
+          <span class="meta-item">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+              <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            {{ ev.fecha|date:"d/m/Y H:i" }}
+          </span>
+          <!-- Lugar -->
+          <span class="meta-item">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+              <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+            </svg>
+            {{ ev.lugar }}
+          </span>
+          <!-- Registros -->
+          <span class="reg-count">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+            <strong>{{ ev.total_reg }}</strong> registro{{ ev.total_reg|pluralize }}
+          </span>
+          <!-- Estado -->
+          {% if ev.activo %}
+          <span class="badge badge--active"><span class="badge__dot"></span>Activo</span>
+          {% else %}
+          <span class="badge badge--inactive"><span class="badge__dot"></span>Inactivo</span>
+          {% endif %}
+        </div>
+        <div class="evento-url">/{{ ev.slug }}/</div>
+      </div>
+
+      <div class="evento-actions">
+        <a href="/panel/evento/{{ ev.pk }}/editar/" class="btn-accion btn-editar">Editar</a>
+        <a href="/panel/registros/?evento={{ ev.pk }}" class="btn-accion btn-registros">Ver registros</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-state__icon">📅</div>
+    <p class="empty-state__title">No hay eventos todavía</p>
+    <p class="empty-state__sub">Crea tu primer evento para comenzar a recibir registros.</p>
+    <a href="/panel/evento/nuevo/" class="btn-crear" style="display:inline-flex">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      Crear primer evento
+    </a>
+  </div>
+  {% endif %}
+</main>
+
+<footer>© Backstage Company · Panel de Control</footer>
+
+</body>
+</html>

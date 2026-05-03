@@ -152,6 +152,12 @@ def panel_registros(request):
 
 
 @login_required(login_url='/admin/login/')
+def panel_eventos_lista(request):
+    eventos = Evento.objects.annotate(total_reg=Count('registro')).order_by('-fecha')
+    return render(request, 'panel/eventos_lista.html', {'eventos': eventos})
+
+
+@login_required(login_url='/admin/login/')
 def panel_exportar_csv(request):
     evento_id = request.GET.get('evento')
     response = HttpResponse(content_type='text/csv; charset=utf-8')
