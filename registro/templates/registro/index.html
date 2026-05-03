@@ -327,6 +327,12 @@
     }
 
     /* ── BOTÓN ── */
+    @keyframes btnEnable {
+      0%   { transform: scale(1); }
+      55%  { transform: scale(1.02); }
+      100% { transform: scale(1); }
+    }
+
     .btn-wrap {
       display: flex;
       justify-content: center;
@@ -347,13 +353,14 @@
       border: none;
       border-radius: 2px;
       cursor: pointer;
-      transition: background 0.2s, transform 0.1s, color 0.7s;
+      transition: background 0.2s, transform 0.1s, opacity 0.4s, color 0.7s;
       animation: pulseBtn 3s ease-in-out infinite;
     }
 
-    .btn-registrar:hover   { background: var(--accent-hover); }
-    .btn-registrar:active  { transform: scale(0.98); animation: none; }
-    .btn-registrar:disabled { opacity: 0.6; cursor: not-allowed; animation: none; }
+    .btn-registrar:hover    { background: var(--accent-hover); }
+    .btn-registrar:active   { transform: scale(0.98); animation: none; }
+    .btn-registrar:disabled { opacity: 0.5; cursor: not-allowed; animation: none; pointer-events: none; }
+    .btn-registrar.activando { animation: btnEnable 0.4s ease both; }
 
     /* ── ÉXITO ── */
     .success-msg {
@@ -397,7 +404,7 @@
       <span class="marca-principal">Backstage</span>
       <span class="marca-company">Company</span>
     </div>
-    <p class="evento-subtitulo">{{ evento.nombre }}</p>
+    <p class="evento-subtitulo">Backstage Events</p>
     <div class="evento-meta">
       <span>
         <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -529,7 +536,7 @@
 
       <!-- Botón centrado -->
       <div class="btn-wrap">
-        <button type="submit" class="btn-registrar" id="btnRegistrar">Registrarme</button>
+        <button type="submit" class="btn-registrar" id="btnRegistrar" disabled>Registrarme</button>
       </div>
     </form>
   </div>
@@ -623,6 +630,7 @@
 
   /* ── SUBGÉNEROS ── */
   const subgenerosPorGenero = {
+    'Rock':      ['Clásico', 'Alternativo', 'Metal', 'Punk'],
     'Techno':    ['Melodic Techno', 'Hard Techno', 'Peak Time', 'Industrial'],
     'House':     ['Deep House', 'Tech House', 'Afro House', 'Minimal'],
     'EDM':       ['Trance', 'Dubstep', 'Drum & Bass', 'Future Bass', 'Moombahton'],
@@ -702,6 +710,36 @@
   const successMsg = document.getElementById('successMsg');
   const errFields  = ['nombre', 'email', 'telefono', 'ciudad', 'ciudad_otra', 'generos', 'genero_otro', 'experiencia', 'experiencia_otro', 'comentario'];
 
+  /* ── VALIDACIÓN BOTÓN ── */
+  function validarFormulario() {
+    const nombre  = (document.getElementById('id_nombre')?.value  || '').trim();
+    const email   = (document.getElementById('id_email')?.value   || '').trim();
+    const tel     = (document.getElementById('id_telefono')?.value || '').trim();
+    const ciudad  = document.getElementById('id_ciudad')?.value   || '';
+    const hayGenero = !!document.querySelector('#generos-container input[type=checkbox]:checked');
+    const hayExp    = !!document.querySelector('#experiencia-container input[type=checkbox]:checked');
+    const emailOk   = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    const listo     = !!(nombre && emailOk && tel && ciudad && hayGenero && hayExp);
+
+    if (listo && btn.disabled) {
+      btn.disabled = false;
+      btn.classList.add('activando');
+      setTimeout(() => btn.classList.remove('activando'), 400);
+    } else if (!listo && !btn.disabled) {
+      btn.disabled = true;
+      btn.classList.remove('activando');
+    }
+  }
+
+  ['id_nombre', 'id_email', 'id_telefono'].forEach(id => {
+    document.getElementById(id)?.addEventListener('input', validarFormulario);
+  });
+  document.getElementById('id_ciudad')?.addEventListener('change', validarFormulario);
+  document.querySelectorAll(
+    '#generos-container input[type=checkbox], #experiencia-container input[type=checkbox]'
+  ).forEach(cb => cb.addEventListener('change', validarFormulario));
+  validarFormulario();
+
   function clearErrors() {
     errFields.forEach(f => {
       const el = document.getElementById('err_' + f);
@@ -735,12 +773,12 @@
         successMsg.style.display = 'block';
       } else {
         showErrors(json.errors);
-        btn.disabled = false;
         btn.textContent = 'Registrarme';
+        validarFormulario();
       }
     } catch {
-      btn.disabled = false;
       btn.textContent = 'Registrarme';
+      validarFormulario();
       alert('Error de conexión. Inténtalo de nuevo.');
     }
   });

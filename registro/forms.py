@@ -101,7 +101,9 @@ class RegistroForm(forms.ModelForm):
     def clean(self):
         cleaned = super().clean()
         ciudad = cleaned.get('ciudad', '')
-        if ciudad == 'otra':
+        if not ciudad:
+            self.add_error('ciudad', 'Selecciona tu ciudad.')
+        elif ciudad == 'otra':
             otra = cleaned.get('ciudad_otra', '').strip()
             if not otra:
                 self.add_error('ciudad_otra', 'Escribe tu ciudad.')
