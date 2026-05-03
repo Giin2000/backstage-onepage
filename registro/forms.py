@@ -2,6 +2,7 @@ from django import forms
 from .models import Registro
 
 GENEROS_CHOICES = [
+    ('Rock', 'Rock'),
     ('Techno', 'Techno'),
     ('House', 'House'),
     ('EDM', 'EDM'),
