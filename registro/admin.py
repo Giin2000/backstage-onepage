@@ -5,7 +5,7 @@ from django.contrib.auth.models import Group, User
 from django.http import HttpResponse
 from django.utils.html import format_html
 
-from .models import Evento, Registro
+from .models import ArtistRegistro, Evento, Registro
 
 # ── Encabezados del sitio ────────────────────────────────────────────────────
 admin.site.site_header = 'Backstage Company'
@@ -98,6 +98,41 @@ def exportar_csv(modeladmin, request, queryset):
     return response
 
 exportar_csv.short_description = 'Exportar registros seleccionados a CSV'
+
+
+# ── Acción CSV Artistas ───────────────────────────────────────────────────────
+def exportar_csv_artistas(modeladmin, request, queryset):
+    response = HttpResponse(content_type='text/csv; charset=utf-8')
+    response['Content-Disposition'] = 'attachment; filename="artistas.csv"'
+    response.write('﻿')  # BOM para Excel
+
+    writer = csv.writer(response)
+    writer.writerow([
+        'Nombre', 'Nombre artístico', 'Email',
+        'Instagram', 'TikTok', 'Spotify', 'YouTube',
+        'Otro contacto', 'Fecha de registro',
+    ])
+    for a in queryset:
+        writer.writerow([
+            a.nombre, a.nombre_artistico, a.email,
+            a.instagram, a.tiktok, a.spotify, a.youtube,
+            a.otro_contacto, a.fecha_registro.strftime('%d/%m/%Y %H:%M'),
+        ])
+    return response
+
+exportar_csv_artistas.short_description = 'Exportar artistas seleccionados a CSV'
+
+
+# ── ArtistRegistro ────────────────────────────────────────────────────────────
+@admin.register(ArtistRegistro)
+class ArtistRegistroAdmin(admin.ModelAdmin):
+    list_display  = ('nombre', 'nombre_artistico', 'email', 'instagram', 'fecha_registro')
+    list_filter   = ('fecha_registro',)
+    search_fields = ('nombre', 'nombre_artistico', 'email')
+    ordering      = ('-fecha_registro',)
+    actions       = [exportar_csv_artistas]
+    list_per_page = 50
+    readonly_fields = ('fecha_registro',)
 
 
 # ── Registro ─────────────────────────────────────────────────────────────────

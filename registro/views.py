@@ -10,8 +10,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods
 
-from .models import Evento, Registro
-from .forms import EventoForm, RegistroForm
+from .models import ArtistRegistro, Evento, Registro
+from .forms import ArtistForm, EventoForm, RegistroForm
 
 
 @require_http_methods(['GET', 'POST'])
@@ -155,6 +155,43 @@ def panel_registros(request):
 def panel_eventos_lista(request):
     eventos = Evento.objects.annotate(total_reg=Count('registro')).order_by('-fecha')
     return render(request, 'panel/eventos_lista.html', {'eventos': eventos})
+
+
+@require_http_methods(['GET', 'POST'])
+def disquera_registro(request):
+    form = ArtistForm()
+    if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        form = ArtistForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'success': True})
+        return JsonResponse({'success': False, 'errors': form.errors})
+    return render(request, 'registro/disquera.html', {'form': form})
+
+
+@login_required(login_url='/admin/login/')
+def panel_artistas(request):
+    artistas = ArtistRegistro.objects.order_by('-fecha_registro')
+
+    if request.GET.get('exportar') == '1':
+        response = HttpResponse(content_type='text/csv; charset=utf-8')
+        response['Content-Disposition'] = 'attachment; filename="artistas.csv"'
+        response.write('﻿')
+        writer = csv.writer(response)
+        writer.writerow([
+            'Nombre', 'Nombre artístico', 'Email',
+            'Instagram', 'TikTok', 'Spotify', 'YouTube',
+            'Otro contacto', 'Fecha de registro',
+        ])
+        for a in artistas:
+            writer.writerow([
+                a.nombre, a.nombre_artistico, a.email,
+                a.instagram, a.tiktok, a.spotify, a.youtube,
+                a.otro_contacto, a.fecha_registro.strftime('%d/%m/%Y %H:%M'),
+            ])
+        return response
+
+    return render(request, 'panel/artistas.html', {'artistas': artistas, 'total': artistas.count()})
 
 
 @login_required(login_url='/admin/login/')

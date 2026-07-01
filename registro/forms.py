@@ -1,5 +1,5 @@
 from django import forms
-from .models import Evento, Registro
+from .models import ArtistRegistro, Evento, Registro
 
 GENEROS_CHOICES = [
     ('Rock', 'Rock'),
@@ -125,3 +125,19 @@ class RegistroForm(forms.ModelForm):
             else:
                 cleaned['ciudad'] = otra
         return cleaned
+
+
+class ArtistForm(forms.ModelForm):
+    class Meta:
+        model  = ArtistRegistro
+        fields = ('nombre', 'nombre_artistico', 'email', 'instagram', 'tiktok', 'spotify', 'youtube', 'otro_contacto')
+        widgets = {
+            'nombre':           forms.TextInput(attrs={'placeholder': 'Tu nombre completo'}),
+            'nombre_artistico': forms.TextInput(attrs={'placeholder': 'Nombre con el que te conocen'}),
+            'email':            forms.EmailInput(attrs={'placeholder': 'tucorreo@gmail.com'}),
+            'instagram':        forms.TextInput(attrs={'placeholder': '@tunombre'}),
+            'tiktok':           forms.TextInput(attrs={'placeholder': '@tunombre'}),
+            'spotify':          forms.TextInput(attrs={'placeholder': 'spotify.com/artist/tunombre'}),
+            'youtube':          forms.TextInput(attrs={'placeholder': '@tucanal'}),
+            'otro_contacto':    forms.TextInput(attrs={'placeholder': 'WhatsApp, SoundCloud, Linktree…'}),
+        }

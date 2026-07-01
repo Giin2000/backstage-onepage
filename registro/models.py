@@ -31,3 +31,18 @@ class Registro(models.Model):
 
     def __str__(self):
         return f'{self.nombre} - {self.evento}'
+
+
+class ArtistRegistro(models.Model):
+    nombre          = models.CharField(max_length=200)
+    nombre_artistico = models.CharField(max_length=200)
+    email           = models.EmailField()
+    instagram       = models.CharField(max_length=200, blank=True)
+    tiktok          = models.CharField(max_length=200, blank=True)
+    spotify         = models.CharField(max_length=200, blank=True)
+    youtube         = models.CharField(max_length=200, blank=True)
+    otro_contacto   = models.CharField(max_length=200, blank=True)
+    fecha_registro  = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.nombre_artistico} ({self.nombre})'

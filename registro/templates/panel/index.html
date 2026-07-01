@@ -10,6 +10,7 @@
       --orange: #FF6B00;
       --cyan: #00E5FF;
       --green: #4CAF50;
+      --purple: #9C27B0;
       --fondo: #0a0a0a;
       --card: #141414;
       --borde: #222;
@@ -71,6 +72,8 @@
     .card--green:hover  { border-color: var(--green);  box-shadow: 0 12px 40px rgba(76,175,80,0.08); }
     .card--gray   { border-top: 3px solid #333; }
     .card--gray:hover   { border-color: #666;          box-shadow: 0 12px 40px rgba(255,255,255,0.03); }
+    .card--purple { border-top: 3px solid var(--purple); }
+    .card--purple:hover { border-color: var(--purple); box-shadow: 0 12px 40px rgba(156,39,176,0.15); }
 
     .card__icon {
       width: 46px; height: 46px; border-radius: 10px;
@@ -80,6 +83,7 @@
     .card--cyan   .card__icon { background: rgba(0,229,255,0.08); }
     .card--green  .card__icon { background: rgba(76,175,80,0.08); }
     .card--gray   .card__icon { background: rgba(255,255,255,0.04); }
+    .card--purple .card__icon { background: rgba(156,39,176,0.12); }
 
     .card__title { font-size: 1rem; font-weight: 800; color: #fff; letter-spacing: 0.01em; }
     .card__desc  { font-size: 0.78rem; color: #666; line-height: 1.5; margin-top: 0.2rem; }
@@ -100,6 +104,7 @@
     .card--cyan   .card__btn { background: var(--cyan);   color: #000; }
     .card--green  .card__btn { background: var(--green);  color: #fff; }
     .card--gray   .card__btn { background: #2a2a2a;       color: #ccc; }
+    .card--purple .card__btn { background: var(--purple); color: #fff; }
 
     footer { text-align: center; padding: 2rem; font-size: 0.7rem; color: #2a2a2a; letter-spacing: 0.08em; }
 
@@ -203,6 +208,22 @@
         <p class="card__desc">Edita, activa o desactiva eventos existentes desde el panel completo.</p>
       </div>
       <span class="card__btn">Administrar</span>
+    </a>
+
+    <!-- Artistas Disquera -->
+    <a href="/studio/artistas/" class="card card--purple">
+      <div class="card__icon">
+        <svg width="22" height="22" fill="none" stroke="#9C27B0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+          <path d="M9 18V5l12-2v13"/>
+          <circle cx="6" cy="18" r="3"/>
+          <circle cx="18" cy="16" r="3"/>
+        </svg>
+      </div>
+      <div>
+        <p class="card__title">Artistas Disquera</p>
+        <p class="card__desc">Consulta y exporta los artistas que se postularon a Backstage Records.</p>
+      </div>
+      <span class="card__btn">Ver artistas</span>
     </a>
 
   </div>

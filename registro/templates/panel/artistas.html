@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Artistas Disquera · Backstage Company</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --purple: #9C27B0;
+      --fondo: #0a0a0a;
+      --card: #141414;
+      --borde: #222;
+      --texto: #e0e0e0;
+    }
+    body { background: var(--fondo); color: var(--texto); font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; }
+
+    .panel-header {
+      background: #0f0f0f;
+      border-bottom: 1px solid #1e1e1e;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo { text-decoration: none; line-height: 1; }
+    .logo-principal { font-size: 1.35rem; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase; color: var(--purple); display: block; }
+    .logo-sub { font-size: 0.52rem; font-weight: 700; letter-spacing: 0.45em; text-transform: uppercase; color: rgba(255,255,255,0.25); margin-top: 0.1rem; display: block; }
+    .header-right { display: flex; align-items: center; gap: 1rem; font-size: 0.8rem; color: #666; }
+    .btn-back { font-size: 0.72rem; color: #888; text-decoration: none; padding: 0.28rem 0.65rem; border: 1px solid #2a2a2a; border-radius: 4px; transition: color 0.2s, border-color 0.2s; }
+    .btn-back:hover { color: #ccc; border-color: #555; }
+
+    .panel-main { max-width: 1100px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+    .panel-eyebrow { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: #444; margin-bottom: 0.4rem; }
+    .panel-heading { font-size: 1.6rem; font-weight: 900; color: #fff; margin-bottom: 0.5rem; }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    .stat-chip {
+      background: #111;
+      border: 1px solid #1e1e1e;
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      font-size: 0.78rem;
+      color: #888;
+    }
+    .stat-chip strong { color: var(--purple); font-size: 1.15rem; display: block; line-height: 1.2; }
+
+    .btn-export {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      background: var(--purple);
+      color: #fff;
+      text-decoration: none;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.5rem 1.2rem;
+      border-radius: 6px;
+      transition: opacity 0.2s;
+    }
+    .btn-export:hover { opacity: 0.85; }
+
+    .table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid var(--borde); }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+    thead th {
+      background: #111;
+      padding: 0.75rem 1rem;
+      text-align: left;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #555;
+      border-bottom: 1px solid var(--borde);
+    }
+    tbody tr { border-bottom: 1px solid #1a1a1a; transition: background 0.15s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #181818; }
+    td { padding: 0.75rem 1rem; color: var(--texto); vertical-align: middle; }
+    td.muted { color: #555; }
+    .redes a {
+      display: inline-block;
+      color: var(--purple);
+      text-decoration: none;
+      margin-right: 0.4rem;
+      font-size: 0.78rem;
+      opacity: 0.85;
+    }
+    .redes a:hover { opacity: 1; }
+    .redes span { color: #444; font-size: 0.75rem; }
+
+    .empty { text-align: center; padding: 3rem 1rem; color: #444; font-size: 0.85rem; }
+
+    footer { text-align: center; padding: 2rem; font-size: 0.7rem; color: #2a2a2a; letter-spacing: 0.08em; }
+
+    @media (max-width: 680px) {
+      .panel-header { padding: 0.85rem 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="panel-header">
+  <a href="/studio/" class="logo">
+    <span class="logo-principal">Backstage</span>
+    <span class="logo-sub">Records · Artistas</span>
+  </a>
+  <div class="header-right">
+    <a href="/studio/" class="btn-back">← Panel</a>
+  </div>
+</header>
+
+<main class="panel-main">
+  <p class="panel-eyebrow">Backstage Records</p>
+  <h1 class="panel-heading">Artistas Registrados</h1>
+
+  <div class="toolbar">
+    <div class="stat-chip">
+      <strong>{{ total }}</strong>
+      artista{% if total != 1 %}s{% endif %} en total
+    </div>
+    <a href="?exportar=1" class="btn-export">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/>
+        <line x1="12" y1="15" x2="12" y2="3"/>
+      </svg>
+      Exportar CSV
+    </a>
+  </div>
+
+  {% if artistas %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Nombre artístico</th>
+          <th>Email</th>
+          <th>Redes</th>
+          <th>Fecha</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in artistas %}
+        <tr>
+          <td>{{ a.nombre }}</td>
+          <td><strong style="color:#fff">{{ a.nombre_artistico }}</strong></td>
+          <td class="muted">{{ a.email }}</td>
+          <td class="redes">
+            {% if a.instagram %}<a href="https://instagram.com/{{ a.instagram|cut:'@' }}" target="_blank" rel="noopener">IG</a>{% endif %}
+            {% if a.tiktok %}<a href="https://tiktok.com/@{{ a.tiktok|cut:'@' }}" target="_blank" rel="noopener">TT</a>{% endif %}
+            {% if a.spotify %}<a href="{{ a.spotify }}" target="_blank" rel="noopener">SP</a>{% endif %}
+            {% if a.youtube %}<a href="https://youtube.com/{{ a.youtube|cut:'@' }}" target="_blank" rel="noopener">YT</a>{% endif %}
+            {% if a.otro_contacto %}<span>{{ a.otro_contacto }}</span>{% endif %}
+            {% if not a.instagram and not a.tiktok and not a.spotify and not a.youtube and not a.otro_contacto %}
+              <span>—</span>
+            {% endif %}
+          </td>
+          <td class="muted">{{ a.fecha_registro|date:"d/m/Y H:i" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty">Aún no hay artistas registrados.</div>
+  {% endif %}
+</main>
+
+<footer>© Backstage Records · Panel de Control</footer>
+
+</body>
+</html>

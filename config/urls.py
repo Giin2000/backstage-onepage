@@ -6,6 +6,7 @@ from django.views.generic import RedirectView
 
 from registro.views import (
     estadisticas_admin,
+    panel_artistas,
     panel_index,
     panel_evento_form,
     panel_eventos_lista,
@@ -24,5 +25,6 @@ urlpatterns = [
     path('studio/eventos/', panel_eventos_lista, name='panel_eventos_lista'),
     path('studio/registros/', panel_registros, name='panel_registros'),
     path('studio/exportar-csv/', panel_exportar_csv, name='panel_exportar_csv'),
+    path('studio/artistas/', panel_artistas, name='panel_artistas'),
     path('', include('registro.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
