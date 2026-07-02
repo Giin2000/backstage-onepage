@@ -126,7 +126,7 @@ exportar_csv_artistas.short_description = 'Exportar artistas seleccionados a CSV
 # ── ArtistRegistro ────────────────────────────────────────────────────────────
 @admin.register(ArtistRegistro)
 class ArtistRegistroAdmin(admin.ModelAdmin):
-    list_display  = ('nombre', 'nombre_artistico', 'email', 'instagram', 'fecha_registro')
+    list_display  = ('nombre', 'nombre_artistico', 'email', 'fecha_registro')
     list_filter   = ('fecha_registro',)
     search_fields = ('nombre', 'nombre_artistico', 'email')
     ordering      = ('-fecha_registro',)
