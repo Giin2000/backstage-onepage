@@ -101,6 +101,21 @@
 
     .empty { text-align: center; padding: 3rem 1rem; color: #444; font-size: 0.85rem; }
 
+    .btn-delete {
+      background: #b91c1c;
+      color: #fff;
+      border: none;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 0.4rem 0.85rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .btn-delete:hover { opacity: 0.85; }
+
     footer { text-align: center; padding: 2rem; font-size: 0.7rem; color: #2a2a2a; letter-spacing: 0.08em; }
 
     @media (max-width: 680px) {
@@ -149,6 +164,7 @@
           <th>Email</th>
           <th>Redes</th>
           <th>Fecha</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -168,6 +184,12 @@
             {% endif %}
           </td>
           <td class="muted">{{ a.fecha_registro|date:"d/m/Y H:i" }}</td>
+          <td>
+            <form method="post" action="/studio/artistas/{{ a.pk }}/eliminar/" onsubmit="return confirm('¿Eliminar a {{ a.nombre_artistico|escapejs }}?');">
+              {% csrf_token %}
+              <button type="submit" class="btn-delete">Eliminar</button>
+            </form>
+          </td>
         </tr>
         {% endfor %}
       </tbody>

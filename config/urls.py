@@ -5,6 +5,7 @@ from django.conf.urls.static import static
 from django.views.generic import RedirectView
 
 from registro.views import (
+    eliminar_artista,
     estadisticas_admin,
     panel_artistas,
     panel_index,
@@ -26,5 +27,6 @@ urlpatterns = [
     path('studio/registros/', panel_registros, name='panel_registros'),
     path('studio/exportar-csv/', panel_exportar_csv, name='panel_exportar_csv'),
     path('studio/artistas/', panel_artistas, name='panel_artistas'),
+    path('studio/artistas/<int:pk>/eliminar/', eliminar_artista, name='eliminar_artista'),
     path('', include('registro.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

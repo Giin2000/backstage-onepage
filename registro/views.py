@@ -195,6 +195,14 @@ def panel_artistas(request):
 
 
 @login_required(login_url='/admin/login/')
+@require_http_methods(['POST'])
+def eliminar_artista(request, pk):
+    artista = get_object_or_404(ArtistRegistro, pk=pk)
+    artista.delete()
+    return redirect('/studio/artistas/')
+
+
+@login_required(login_url='/admin/login/')
 def panel_exportar_csv(request):
     evento_id = request.GET.get('evento')
     response = HttpResponse(content_type='text/csv; charset=utf-8')
